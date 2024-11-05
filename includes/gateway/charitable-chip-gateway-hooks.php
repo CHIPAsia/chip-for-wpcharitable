@@ -31,9 +31,11 @@ else {
 }
 
 /**
- * Remove the options according to the user settings
+ * Make the "email" field required in the donation form since CHIP requires it.
+ *
+ * @see Charitable_Gateway_Chip::set_email_field_required()
  */
-add_filter('charitable_donation_form_user_fields', array('Charitable_Gateway_Chip', 'remove_unrequired_fields'));
+add_filter( 'charitable_donation_form_user_fields', array( 'Charitable_Gateway_Instamojo', 'set_email_field_required' ) );
 
 /**
  * Handle public key
@@ -70,12 +72,6 @@ add_action('wp_ajax_charitable_change_currency_to_myr', array('Charitable_Gatewa
  * @see     charitable_ipn_listener()
  */
 add_action('init', array('Charitable_Gateway_Chip', 'ipn_listener'));
-
-/**
- * Add settings to the General tab.
- *
- */
-add_filter('charitable_settings_tab_fields_general', array('Charitable_Gateway_Chip', 'add_chip_fields'), 6);
 
 
 /**
