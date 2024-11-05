@@ -117,6 +117,93 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'help'      => 'Public Key will be generated once Brand ID and Secret Key are set',
             );
 
+            // Get the available payment methods
+            if (isset(charitable_get_option('gateways_chip')['secret_key']) && isset(charitable_get_option('gateways_chip')['brand_id'])) {
+                $chip = new Chip([
+                    charitable_get_option('gateways_chip')['secret_key'],
+                    charitable_get_option('gateways_chip')['brand_id']
+                ]);
+
+                $response = $chip->payment_methods('MYR');
+
+                // Checking response
+                if (array_key_exists("available_payment_methods",$response)) {
+                    $available_payment_methods = $response['available_payment_methods'];
+                    error_log('Successfully get available payment methods');
+                } else {
+                    $available_payment_methods = [];
+                    error_log('Failed to get available payment methods');
+                }
+            } else {
+                $available_payment_methods = [];
+                error_log('Missing secret key or brand ID');
+            }
+
+            $settings['payment_method_whitelist'] = array(
+                'type'      => 'multi-checkbox',
+                'title'     => __('Payment Method Whitelist', 'charitable-chip'),
+                'priority'  => 6,
+                'help'      => 'Set payment method whitelist separated by comma. Acceptable value: fpx, fpx_b2b1, mastercard, maestro, visa, razer_atome, razer_grabpay, razer_maybankqr, razer_shopeepay, razer_tng, duitnow_qr. Leave blank if unsure.',
+                'default'   => ['fpx'],
+                // 'default' => $available_payment_methods,
+                'options'   => array(
+                    'fpx'               => __( 'FPX', 'fpx' ),
+                    'fpx_b2b1'          => __( 'FPX B2B', 'fpx_b2b1' ),
+                    'mastercard'        => __( 'Mastercard', 'mastercard' ),
+                    'maestro'           => __( 'Maestro', 'maestro' ),
+                    'visa'              => __( 'Visa', 'visa' ),
+                    'razer_atome'       => __( 'Razer Atome', 'razer_atome' ),
+                    'razer_grabpay'     => __( 'Razer GrabPay', 'razer_grabpay' ),
+                    'razer_maybankqr'   => __( 'Razer MaybankQR', 'razer_maybankqr' ),
+                    'razer_shopeepay'   => __( 'Razer ShopeePay', 'razer_shopeepay' ),
+                    'razer_tng'         => __( 'Razer TnG', 'razer_tng' ),
+                    'duitnow_qr'        => __( 'DuitNow QR', 'duitnow_qr' ),
+                ),
+                // 'required'  => true,
+            );
+
+            $settings['due_strict'] = array(
+                'type'      => 'radio',
+                'title'     => __('Due Strict', 'charitable-chip'),
+                'priority'  => 6,
+                'help'      => 'Enforce due strict payment timeframe to block payment after due strict timing is passed',
+                'default'=> 0,
+                'options'  => array(
+						'1' => __( 'Yes', 'charitable' ),
+						'0' => __( 'No', 'charitable' ),
+					),
+                // 'required'  => true,
+            );
+
+            $settings['due_strict_timing'] = array(
+                'type'      => 'number',
+                'default'   => 60,
+                'title'     => __('Due Strict Timing', 'charitable-chip'),
+                'priority'  => 6,
+                'help'      => 'Due strict timing in minutes. Default value is: 60.',
+            );
+
+            $settings['purchase_send_receipt'] = array(
+                'type'      => 'radio',
+                'title'     => __('Purchase Send Receipt', 'charitable-chip'),
+                'priority'  => 6,
+                'help'      => 'Select Yes to ask CHIP to send receipt upon successful payment. If activated, CHIP will send purchase receipt upon payment completion.',
+                'default'   => 0,
+                'options'  => array(
+						'1' => __( 'Yes', 'charitable' ),
+						'0' => __( 'No', 'charitable' ),
+					),
+                // 'required'  => true,
+            );
+
+            $settings['email_fallback'] = array(
+                'type'      => 'email',
+                'title'     => __('Email Fallback', 'charitable-chip'),
+                'priority'  => 6,
+                'help'      => 'When email address is not requested to the customer, use this email address.',
+            );
+
+
             return $settings;
         }
 
@@ -180,11 +267,6 @@ if (!class_exists('Charitable_Gateway_Chip'))
             
             exit();
         }
-        // public static function redirect_to_processing($return, $donation_id)
-        // {
-
-       
-        // }
 
         /**
          * Process the donation with CHIP
