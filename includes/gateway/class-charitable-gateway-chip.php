@@ -267,20 +267,14 @@ if (!class_exists('Charitable_Gateway_Chip'))
 
             $brand_id = apply_filters('chip_for_wp_charitable_brand_id', $keys['brand_id'], $post, $campaign);
             $secret_key = apply_filters('chip_for_wp_charitable_secret_key', $keys['secret_key'], $post, $campaign);
-            $ipn_url = Charitable_Gateway_Chip_IPN_Listener::get_listener_url($donation);
+            $callback_url = Charitable_Gateway_Chip_Callback_Listener::get_listener_url($donation);
 
-
-            error_log('Brand ID: ' . $brand_id);
             // Response URL
-            // $cancel_url = charitable_get_permalink('donation_cancel_page', array('donation_id' => $donation->ID));
-            // $response_url	= get_option( 'siteurl' ).'/donation-receipt/'.$donation->ID.'';
             $success_url = charitable_get_permalink('donation_receipt_page',array('donation_id' => $donation->ID));
             $success_url = add_query_arg('donation_key', $donation_key, $success_url);
-            // $campaign_donation_url = charitable_get_permalink( 'campaign_donation_page', array( 'campaign_id' => $campaign->ID));
-            // $campaign_url = charitable_get_permalink( 'campaign_donation', array( 'campaign_id' => $campaign->ID));
             $cancel_url = charitable_get_permalink('donation_cancellation', array('donation_id' => $donation->ID));
 
-            // Params
+            // Set Params
             $purchase_params = array(
                 'client' => array(
                     'email' => $email,
@@ -290,7 +284,7 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'success_redirect' => $success_url, // the donation receipt url page
                 // 'failure_redirect' => '',
                 'cancel_redirect' => $cancel_url, // donation cancel page
-                // 'success_callback' => $ipn_url, // ipn callback 
+                // 'success_callback' => $callback_url, // callback 
                 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
                 'creator_agent'    => 'WP Charitable',
                 'reference'        => $donation->ID, 
@@ -324,22 +318,13 @@ if (!class_exists('Charitable_Gateway_Chip'))
 
             $response = $chip->create_payment($purchase_params);
 
-
-            // Check if success or fail
-            // $bill_url = $response['checkout_url'];
-            // $bill_id = $response['id'];
-
-            // error_log('Bill ID: ' . $bill_id);
-
-            // Set the gateway trxn id
-            // $donation->set_gateway_transaction_id($bill_id);
-
             // Check if have response from CHIP
             if (isset($response['id'])) {
                 $method_data['action'] = $response['checkout_url'];
+
+                // Set Charitable CHIP Gateway transaction ID
                 $donation->set_gateway_transaction_id($response['id']);
                 self::update_donation_log($donation, "Checkout Link: " . print_r($response['checkout_url'], true));
-                // $donation->update_donation_log("Checkout Link: " . print_r($response['checkout_url']));
                 // update_option('chip_charitable_bill_id_' . $bill_id, $donation->ID, false);
             }
 
@@ -368,20 +353,11 @@ if (!class_exists('Charitable_Gateway_Chip'))
         }
 
         /**
-         * Update Charitable Donation Log
-         */
-        // public static function update_donation_log($donation, $message)
-        // {
-        //     // Check Charitable version
-
-        //     return $donation->update_donation_log($message);
-        // }
-
-        /**
-         * Update the donation's log. 		 
+         * Update Charitable Donation Log 
          */
         public static function update_donation_log($donation, $message)
         {
+            // Check the version
             if (version_compare(charitable()->get_version(), '1.4.0', '<')) {
                 return Charitable_Donation::update_donation_log($donation->ID, $message);
             }
@@ -399,8 +375,116 @@ if (!class_exists('Charitable_Gateway_Chip'))
          */
         public static function process_response(Charitable_Donation $donation)
         {
+            // return;
             error_log('Running process_response() function');
-            return;
+
+            // Check if the donation status is complete
+            if (get_post_status($donation->ID) == 'charitable-completed') {
+                return;
+            }
+
+            // Set the variables
+            $donation_key = $_REQUEST['donation_key'];
+            $transaction_id = $donation->get_gateway_transaction_id();
+
+            // Check if empty
+            $secret_key = charitable_get_option('gateways_chip')['secret_key'];
+            $brand_id = charitable_get_option('gateways_chip')['brand_id'];
+
+            $credentials = array(
+                $secret_key,
+                $brand_id
+            );
+
+            error_log('Brand ID: ' . $brand_id);
+            
+            // CHIP API (Checking for transaction status)
+            $gateway = new Charitable_Gateway_Chip();
+            $chip = new Chip($credentials);
+            $response = $chip->get_payment($transaction_id);    // check if transaction_id exist
+
+            // Check if CHIP transaction is paid
+            if (isset($response)){
+                // Check if donation ID same
+                $donation_id = $response['reference'];
+                $amount = $response['purchase']['total'];
+                $payment_method = $response['transaction_data']['payment_method'];
+
+                // Check if donation_id from reference same
+                if ($donation_id != $donation->ID) {
+                    return;
+                }
+
+                if ($response['status'] == 'paid') {
+                    // Verify for donation_key
+                    if ($donation_key != $donation->get_donation_key()) {
+                        // Set donation to failed
+                        error_log('Donation key missing for donation ID: ' . $donation_id);
+                        $message = sprintf(
+                            __('The donation key in the response does not match the donation. Response data: %s',
+                                'charitable-chip'), json_encode($_REQUEST));
+                        self::update_donation_log($donation, $message);
+                        $donation->update_status('charitable-failed');
+                        return;
+                    }
+
+                    // Verify the amount of donation with API
+                    if ($amount != ($donation->get_total_donation_amount() * 100)) {
+                        error_log('Donation amount mismatch for donation ID: ' . $donation_id);
+                        $message = sprintf(
+                            __(
+                                'The amount in the response does not match the expected donation amount. Response data: %s',
+                                'charitable-chip'), json_encode($_REQUEST));
+                        self::update_donation_log($donation, $message);
+                        $donation->update_status('charitable-failed');
+                        return;
+                    }
+
+                    error_log('Donation is paid for donation ID  ' . $donation_id .  ' with transaction ID ' .  $transaction_id);
+
+                    // Donation status is paid
+                    $message = sprintf(
+                        __('CHIP Transaction ID: %s and Payment Method: %s', 'charitable-chip'), $transaction_id,
+                        $payment_method);
+                    self::update_donation_log($donation, $message);
+                    
+                    // Lock the row
+                    self::get_lock($donation_id);
+
+                    // Update donation status to complete
+                    $donation->update_status('charitable-completed');
+
+                    // Release the lock
+                    self::release_lock($donation_id);
+
+                    return;
+                } else {
+                    error_log('Status unpaid for donation ID: ' . $donation->ID . ' with transaction ID ' .  $transaction_id);
+                    $message = sprintf(
+                        __(
+                            'Unfortunately, your donation was declined by our payment gateway.
+                            <br><b>Donation Number:</b> %s
+                            <br><b>Transaction ID:</b> %s', 'charitable-chip'), $donation->ID, $transaction_id,
+                        );
+                    self::update_donation_log($donation, $message);
+                    $donation->update_status('charitable-failed');
+                    
+                    $message .= "<br><br><a href=" . $gateway->getCancelURL($donation) . ">Go Back</a></div>";
+                    die(__($message, 'charitable'));
+                    return;
+                }
+            } else {
+                error_log('No response from CHIP API for donation ID: ' . $donation->ID . ' with transaction ID ' .  $transaction_id);
+                $message = sprintf(
+                    __(
+                        'Error. Response data: %s',
+                        'charitable-chip'), json_encode($_REQUEST));
+                self::update_donation_log($donation, $message);
+                $donation->update_status('charitable-failed');
+                return;
+            }
+            
+            // return;
         }
 
         /**
@@ -541,117 +625,31 @@ if (!class_exists('Charitable_Gateway_Chip'))
 
         public static function ipn_listener()
         {
-            new Charitable_Gateway_Chip_IPN_Listener;
+            new Charitable_Gateway_Chip_Callback_Listener;
         }
-        /*
-         * Add option to hide some element that not required by CHIP API
+
+        /**
+         * Set email field as required
          */
-
-        public static function add_chip_fields($field)
+        public static function set_email_field_required($fields)
         {
-            $general_fields = array(
-                'chip_section_pages' => array(
-                    'title' => __('CHIP for WP Charitable', 'charitable'),
-                    'type' => 'heading',
-                    'priority' => 50,
-                ),
-                'chip_full_name' => array(
-                    'title' => __('Replace First & Last Name with Full Name', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Use Malaysian Style Naming',
-                    'priority' => 60,
-                ),
-                'chip_rem_add' => array(
-                    'title' => __('Remove Address 1 & 2 Field', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Remove Address Field on Payment',
-                    'priority' => 70,
-                ),
-                'chip_rem_city' => array(
-                    'title' => __('Remove City Field', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Remove City Field on Payment',
-                    'priority' => 80,
-                ),
-                'chip_rem_state' => array(
-                    'title' => __('Remove State Field', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Remove State Field on Payment',
-                    'priority' => 90,
-                ),
-                'chip_rem_postcode' => array(
-                    'title' => __('Remove Postcode Field', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Remove Postcode Field on Payment',
-                    'priority' => 100,
-                ),
-                'chip_rem_country' => array(
-                    'title' => __('Remove Country Field', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Remove Country Field on Payment',
-                    'priority' => 110,
-                ),
-                'chip_mak_phone' => array(
-                    'title' => __('Phone Required', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Make Phone Fields Mandatory to be set',
-                    'priority' => 120,
-                ),
-                'chip_unr_email' => array(
-                    'title' => __('Unrequire Email', 'charitable'),
-                    'type' => 'checkbox',
-                    'help' => 'Make Email Fields Optional to be set. NOT RECOMMENDED',
-                    'priority' => 120,
-                ),
-            );
-            $field = array_merge($field, $general_fields);
-            return $field;
+            $fields['email']['required'] = true;
+            return $fields;
         }
 
-        public static function remove_unrequired_fields($fields)
-        {
+        /**
+		 * Get lock row
+		 */
+		public static function get_lock( $donation_id ) {
+            $GLOBALS['wpdb']->get_results("SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);" );
+		}
 
-            $full_name = charitable_get_option('chip_full_name', false);
-            $address = charitable_get_option('chip_rem_add', false);
-            $city = charitable_get_option('chip_rem_city', false);
-            $state = charitable_get_option('chip_rem_state', false);
-            $postcode = charitable_get_option('chip_rem_postcode', false);
-            $country = charitable_get_option('chip_rem_country', false);
-            $phone = charitable_get_option('chip_mak_phone', false);
-            $email = charitable_get_option('chip_unr_email', false);
 
-            if ($full_name) {
-                unset($fields['last_name']);
-                $fields['first_name']['label'] = __('Name', 'charitable');
-            }
-
-            if ($address) {
-                unset($fields['address']);
-                unset($fields['address_2']);
-            }
-
-            if ($city) {
-                unset($fields['city']);
-            }
-            if ($state) {
-                unset($fields['state']);
-            }
-            if ($postcode) {
-                unset($fields['postcode']);
-            }
-            if ($country) {
-                unset($fields['country']);
-            }
-
-            if ($phone) {
-                $fields['phone']['required'] = true;
-            }
-
-            if ($email) {
-                $fields['email']['required'] = false;
-            }
-
-            return $fields;
+		/** 
+		 * Release lock row
+		 */
+        public static function release_lock( $donation_id ) {
+            $GLOBALS['wpdb']->get_results("SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');" );
         }
     }
 
