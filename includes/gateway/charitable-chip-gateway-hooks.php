@@ -71,7 +71,7 @@ add_action('wp_ajax_charitable_change_currency_to_myr', array('Charitable_Gatewa
  *
  * @see     charitable_ipn_listener()
  */
-add_action('init', array('Charitable_Gateway_Chip', 'ipn_listener'));
+add_action('init', array('Charitable_Gateway_Chip', 'callback_listener'));
 
 
 /**

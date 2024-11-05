@@ -1,7 +1,7 @@
 <?php
 if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 
-	class Charitable_Gateway_Chip_Callbacl_Listener {
+	class Charitable_Gateway_Chip_Callback_Listener {
 		const QUERY_CC_ID = 'chip_charitable_id';
 		const QUERY_DONATION_KEY = 'donation_key';
 

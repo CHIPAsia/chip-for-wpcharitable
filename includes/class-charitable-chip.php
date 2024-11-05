@@ -137,7 +137,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		{
 			require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip.php' );
 			require_once( $this->get_path( 'includes' ) . 'gateway/charitable-chip-gateway-hooks.php' );
-            require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip-ipn-listener.php' );
+            require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip-callback-listener.php' );
             require_once( $this->get_path( 'includes' ) . 'chip.php' );
 		}
 

@@ -623,7 +623,7 @@ if (!class_exists('Charitable_Gateway_Chip'))
          * Listen to CHIP Callback & Return
          */
 
-        public static function ipn_listener()
+        public static function callback_listener()
         {
             new Charitable_Gateway_Chip_Callback_Listener;
         }
