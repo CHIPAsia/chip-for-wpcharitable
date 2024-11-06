@@ -118,26 +118,26 @@ if (!class_exists('Charitable_Gateway_Chip'))
             );
 
             // Get the available payment methods
-            if (isset(charitable_get_option('gateways_chip')['secret_key']) && isset(charitable_get_option('gateways_chip')['brand_id'])) {
-                $chip = new Chip([
-                    charitable_get_option('gateways_chip')['secret_key'],
-                    charitable_get_option('gateways_chip')['brand_id']
-                ]);
+            // if (isset(charitable_get_option('gateways_chip')['secret_key']) && isset(charitable_get_option('gateways_chip')['brand_id'])) {
+            //     $chip = new Chip([
+            //         charitable_get_option('gateways_chip')['secret_key'],
+            //         charitable_get_option('gateways_chip')['brand_id']
+            //     ]);
 
-                $response = $chip->payment_methods('MYR');
+            //     $response = $chip->payment_methods('MYR');
 
-                // Checking response
-                if (array_key_exists("available_payment_methods",$response)) {
-                    $available_payment_methods = $response['available_payment_methods'];
-                    error_log('Successfully get available payment methods');
-                } else {
-                    $available_payment_methods = [];
-                    error_log('Failed to get available payment methods');
-                }
-            } else {
-                $available_payment_methods = [];
-                error_log('Missing secret key or brand ID');
-            }
+            //     // Checking response
+            //     if (array_key_exists("available_payment_methods",$response)) {
+            //         $available_payment_methods = $response['available_payment_methods'];
+            //         error_log('Successfully get available payment methods');
+            //     } else {
+            //         $available_payment_methods = [];
+            //         error_log('Failed to get available payment methods');
+            //     }
+            // } else {
+            //     $available_payment_methods = [];
+            //     error_log('Missing secret key or brand ID');
+            // }
 
             $settings['payment_method_whitelist'] = array(
                 'type'      => 'multi-checkbox',
@@ -356,6 +356,24 @@ if (!class_exists('Charitable_Gateway_Chip'))
             $success_url = add_query_arg('donation_key', $donation_key, $success_url);
             $cancel_url = charitable_get_permalink('donation_cancellation', array('donation_id' => $donation->ID));
 
+
+            // Set due
+            if (isset(charitable_get_option('gateways_chip')['due_strict'])) {
+                if (charitable_get_option('gateways_chip')['due_strict'] == 1) {
+                    $due_strict = true;
+                }
+            } else {
+                $due_strict = false;
+            }
+
+            // Set purchase send receipt 
+            if (isset(charitable_get_option('gateways_chip')['purchase_send_receipt'])) {
+                $purchase_send_receipt = (bool)(charitable_get_option('gateways_chip')['purchase_send_receipt']);
+            } else {
+                $purchase_send_receipt = false;
+            }
+
+
             // Set Params
             $purchase_params = array(
                 'client' => array(
@@ -372,31 +390,45 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'reference'        => $donation->ID, 
                 // 'client_id'        => $client['id'],
                 'platform'         => 'api', // 'charitable'
-                // 'send_receipt'     => $params['purchaseSendReceipt'] == 'on',
+                'send_receipt'     => $purchase_send_receipt, // charitable_get_option('gateways_chip')['purchase_send_receipt'] == 1,
                 // 'due'              => time() + (abs( (int)$params['dueStrictTiming'] ) * 60),
                 'brand_id'         => $brand_id,
                 'purchase'         => array(
                 //   'timezone'   => $params['purchaseTimeZone'],
                 'currency'   => 'MYR',
-                //   'due_strict' => $params['dueStrict'] == 'on',
+                'due_strict' => $due_strict,
                 'products'   => array([
                     'name'     => substr($campaign_name, 0, 256),
                     'price'    => round($amount * 100),
                 ]),
                 ),
             );
-            
 
+            // Set due timing
+            if ($due_strict) {
+                if ( ! empty(charitable_get_option('gateways_chip')['due_strict_timing'])) {
+                    $purchase_params['due'] = time() + abs((int)charitable_get_option('gateways_chip')['due_strict_timing']) * 60;
+                }
+            }
+
+            // Set payment method whitelist
+            if (isset(charitable_get_option('gateways_chip')['payment_method_whitelist'])) {
+                $payment_method_whitelist = charitable_get_option('gateways_chip')['payment_method_whitelist'];
+
+                error_log('Payment method whitelist: ' . print_r($payment_method_whitelist, true));
+
+                $diff = array_diff($payment_method_whitelist, ['fpx', 'fpx_b2b1', 'mastercard', 'maestro', 'visa', 'razer_atome', 'razer_grabpay', 'razer_maybankqr', 'razer_shopeepay', 'razer_tng', 'duitnow_qr']);
+                if (empty($diff)) {
+                  $purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
+                }
+            } 
+            
             // Check first if brand ID and secret key configured
             $credentials = array(
                 $secret_key,
                 $brand_id
             );
             $chip = new Chip($credentials);
-
-            // error_log('Private Key: ' . $chip->display());
-
-            // error_log(var_dump($chip->create_payment($purchase_params)));
 
             $response = $chip->create_payment($purchase_params);
 
