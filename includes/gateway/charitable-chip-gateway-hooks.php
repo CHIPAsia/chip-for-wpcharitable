@@ -35,7 +35,7 @@ else {
  *
  * @see Charitable_Gateway_Chip::set_email_field_required()
  */
-add_filter( 'charitable_donation_form_user_fields', array( 'Charitable_Gateway_Instamojo', 'set_email_field_required' ) );
+add_filter( 'charitable_donation_form_user_fields', array( 'Charitable_Gateway_Chip', 'set_email_field_required' ) );
 
 /**
  * Handle public key
