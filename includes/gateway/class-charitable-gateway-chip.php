@@ -196,12 +196,12 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 // 'required'  => true,
             );
 
-            $settings['email_fallback'] = array(
-                'type'      => 'email',
-                'title'     => __('Email Fallback', 'charitable-chip'),
-                'priority'  => 6,
-                'help'      => 'When email address is not requested to the customer, use this email address.',
-            );
+            // $settings['email_fallback'] = array(
+            //     'type'      => 'email',
+            //     'title'     => __('Email Fallback', 'charitable-chip'),
+            //     'priority'  => 6,
+            //     'help'      => 'When email address is not requested to the customer, use this email address.',
+            // );
 
 
             return $settings;
@@ -373,6 +373,22 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 $purchase_send_receipt = false;
             }
 
+            // Email fallback
+            // if (empty($email)) {
+            //     // Check email fallback
+            //     if (isset(charitable_get_option('gateways_chip')['email_fallback'])) {
+            //         $email = charitable_get_option('gateways_chip')['email_fallback'];
+            //     }
+            // } else {
+            //     error_log('Error, no email set for donation ID: ' . $donation->ID);
+            //     $message = sprintf(
+            //         __(
+            //             'Error caused by empty email . Response data: %s',
+            //             'charitable-chip'), json_encode($_REQUEST));
+            //     self::update_donation_log($donation, $message);
+            //     $donation->update_status('charitable-failed');
+            // }
+
 
             // Set Params
             $purchase_params = array(
@@ -384,8 +400,8 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'success_redirect' => $success_url, // the donation receipt url page
                 // 'failure_redirect' => '',
                 'cancel_redirect' => $cancel_url, // donation cancel page
-                // 'success_callback' => $callback_url, // callback 
-                'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
+                'success_callback' => $callback_url, // callback 
+                // 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
                 'creator_agent'    => 'WP Charitable',
                 'reference'        => $donation->ID, 
                 // 'client_id'        => $client['id'],
