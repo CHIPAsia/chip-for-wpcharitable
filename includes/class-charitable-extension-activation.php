@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Activation handler for Charitable extensions.
  *
@@ -28,7 +29,7 @@ class Charitable_Extension_Activation
     public function __construct($plugin_path, $plugin_file)
     {
         // We need plugin.php!
-        require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+        require_once(ABSPATH . 'wp-admin/includes/plugin.php');
 
         $plugins = get_plugins();
 

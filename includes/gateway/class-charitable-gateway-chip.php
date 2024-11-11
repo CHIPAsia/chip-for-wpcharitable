@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CHIP Gateway class
  *
@@ -6,13 +7,11 @@
  * @package     Charitable/Classes/Charitable_Gateway_Chip
  */
 // Exit if accessed directly.
-if (!defined('ABSPATH')) 
-{
+if (!defined('ABSPATH')) {
     exit;
 }
 
-if (!class_exists('Charitable_Gateway_Chip')) 
-{
+if (!class_exists('Charitable_Gateway_Chip')) {
     /**
      * CHIP Gateway
      *
@@ -84,13 +83,12 @@ if (!class_exists('Charitable_Gateway_Chip'))
             }
 
             // Checking if CHIP default gateway
-            if ('chip' != charitable_get_option('default_gateway')) 
-			{
-            	$settings['default_gateway_notice'] = array(
-                	'type' 			=> 'notice',
-                    'content' 		=> $this->get_default_gateway_notice(),
-                    'priority' 		=> 2,
-                    'notice_type' 	=> 'error'
+            if ('chip' != charitable_get_option('default_gateway')) {
+                $settings['default_gateway_notice'] = array(
+                    'type'             => 'notice',
+                    'content'         => $this->get_default_gateway_notice(),
+                    'priority'         => 2,
+                    'notice_type'     => 'error'
                 );
             }
 
@@ -147,17 +145,17 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'default'   => ['fpx'],
                 // 'default' => $available_payment_methods,
                 'options'   => array(
-                    'fpx'               => __( 'FPX', 'fpx' ),
-                    'fpx_b2b1'          => __( 'FPX B2B', 'fpx_b2b1' ),
-                    'mastercard'        => __( 'Mastercard', 'mastercard' ),
-                    'maestro'           => __( 'Maestro', 'maestro' ),
-                    'visa'              => __( 'Visa', 'visa' ),
-                    'razer_atome'       => __( 'Razer Atome', 'razer_atome' ),
-                    'razer_grabpay'     => __( 'Razer GrabPay', 'razer_grabpay' ),
-                    'razer_maybankqr'   => __( 'Razer MaybankQR', 'razer_maybankqr' ),
-                    'razer_shopeepay'   => __( 'Razer ShopeePay', 'razer_shopeepay' ),
-                    'razer_tng'         => __( 'Razer TnG', 'razer_tng' ),
-                    'duitnow_qr'        => __( 'DuitNow QR', 'duitnow_qr' ),
+                    'fpx'               => __('FPX', 'fpx'),
+                    'fpx_b2b1'          => __('FPX B2B', 'fpx_b2b1'),
+                    'mastercard'        => __('Mastercard', 'mastercard'),
+                    'maestro'           => __('Maestro', 'maestro'),
+                    'visa'              => __('Visa', 'visa'),
+                    'razer_atome'       => __('Razer Atome', 'razer_atome'),
+                    'razer_grabpay'     => __('Razer GrabPay', 'razer_grabpay'),
+                    'razer_maybankqr'   => __('Razer MaybankQR', 'razer_maybankqr'),
+                    'razer_shopeepay'   => __('Razer ShopeePay', 'razer_shopeepay'),
+                    'razer_tng'         => __('Razer TnG', 'razer_tng'),
+                    'duitnow_qr'        => __('DuitNow QR', 'duitnow_qr'),
                 ),
                 // 'required'  => true,
             );
@@ -167,11 +165,11 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'title'     => __('Due Strict', 'charitable-chip'),
                 'priority'  => 6,
                 'help'      => 'Enforce due strict payment timeframe to block payment after due strict timing is passed',
-                'default'=> 0,
+                'default' => 0,
                 'options'  => array(
-						'1' => __( 'Yes', 'charitable' ),
-						'0' => __( 'No', 'charitable' ),
-					),
+                    '1' => __('Yes', 'charitable'),
+                    '0' => __('No', 'charitable'),
+                ),
                 // 'required'  => true,
             );
 
@@ -190,9 +188,9 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'help'      => 'Select Yes to ask CHIP to send receipt upon successful payment. If activated, CHIP will send purchase receipt upon payment completion.',
                 'default'   => 0,
                 'options'  => array(
-						'1' => __( 'Yes', 'charitable' ),
-						'0' => __( 'No', 'charitable' ),
-					),
+                    '1' => __('Yes', 'charitable'),
+                    '0' => __('No', 'charitable'),
+                ),
                 // 'required'  => true,
             );
 
@@ -214,22 +212,20 @@ if (!class_exists('Charitable_Gateway_Chip'))
         {
             $cancel_url = charitable_get_permalink('donation_cancel_page', array('donation_id' => $donation->ID));
 
-            if (! $cancel_url) 
-			{
-            	$cancel_url = esc_url(add_query_arg(
-				array('donation_id' => $donation->ID, 'cancel' => true), wp_get_referer()));
+            if (! $cancel_url) {
+                $cancel_url = esc_url(add_query_arg(
+                    array('donation_id' => $donation->ID, 'cancel' => true),
+                    wp_get_referer()
+                ));
             }
-            
-			return $cancel_url;
+
+            return $cancel_url;
         }
 
         /**
          * Return donation page url
          */
-        private function get_donation_page_url($donation)
-        {
-            
-        }
+        private function get_donation_page_url($donation) {}
 
         /**
          * Return the keys to use.
@@ -260,11 +256,14 @@ if (!class_exists('Charitable_Gateway_Chip'))
         public static function redirect_to_processing_legacy($donation_id)
         {
             wp_safe_redirect(
-                charitable_get_permalink('donation_processing_page',
+                charitable_get_permalink(
+                    'donation_processing_page',
                     array(
                         'donation_id' => $donation_id
-                    )));
-            
+                    )
+                )
+            );
+
             exit();
         }
 
@@ -307,7 +306,6 @@ if (!class_exists('Charitable_Gateway_Chip'))
 
             $content = ob_get_clean();
             return $content;
-
         }
 
         /**
@@ -320,7 +318,7 @@ if (!class_exists('Charitable_Gateway_Chip'))
              * Support for Advance CHIP for WP Charitable Plugin
              */
             $campaign_donations = $donation->get_campaign_donations();
-            
+
             foreach ($campaign_donations as $key => $value) {
                 if (!empty($value->campaign_id)) {
                     $post_id = $value->campaign_id;
@@ -341,8 +339,8 @@ if (!class_exists('Charitable_Gateway_Chip'))
             $mobile = $donor->get_donor_meta('phone') ?? '';
             $amount = $donation->get_total_donation_amount(true);
 
-            $product_info 	= html_entity_decode($donation->get_campaigns_donated_to(), ENT_COMPAT, 'UTF-8' );
-            $donation_key	= $donation->get_donation_key();
+            $product_info     = html_entity_decode($donation->get_campaigns_donated_to(), ENT_COMPAT, 'UTF-8');
+            $donation_key    = $donation->get_donation_key();
             $payment_gateway =  $donation->get_gateway();
 
             $keys = $gateway->get_keys();
@@ -352,7 +350,7 @@ if (!class_exists('Charitable_Gateway_Chip'))
             $callback_url = Charitable_Gateway_Chip_Callback_Listener::get_listener_url($donation);
 
             // Response URL
-            $success_url = charitable_get_permalink('donation_receipt_page',array('donation_id' => $donation->ID));
+            $success_url = charitable_get_permalink('donation_receipt_page', array('donation_id' => $donation->ID));
             $success_url = add_query_arg('donation_key', $donation_key, $success_url);
             $cancel_url = charitable_get_permalink('donation_cancellation', array('donation_id' => $donation->ID));
 
@@ -403,26 +401,26 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 'success_callback' => $callback_url, // callback 
                 // 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
                 'creator_agent'    => 'WP Charitable',
-                'reference'        => $donation->ID, 
+                'reference'        => $donation->ID,
                 // 'client_id'        => $client['id'],
                 'platform'         => 'api', // 'charitable'
                 'send_receipt'     => $purchase_send_receipt, // charitable_get_option('gateways_chip')['purchase_send_receipt'] == 1,
                 // 'due'              => time() + (abs( (int)$params['dueStrictTiming'] ) * 60),
                 'brand_id'         => $brand_id,
                 'purchase'         => array(
-                //   'timezone'   => $params['purchaseTimeZone'],
-                'currency'   => 'MYR',
-                'due_strict' => $due_strict,
-                'products'   => array([
-                    'name'     => substr($campaign_name, 0, 256),
-                    'price'    => round($amount * 100),
-                ]),
+                    //   'timezone'   => $params['purchaseTimeZone'],
+                    'currency'   => 'MYR',
+                    'due_strict' => $due_strict,
+                    'products'   => array([
+                        'name'     => substr($campaign_name, 0, 256),
+                        'price'    => round($amount * 100),
+                    ]),
                 ),
             );
 
             // Set due timing
             if ($due_strict) {
-                if ( ! empty(charitable_get_option('gateways_chip')['due_strict_timing'])) {
+                if (! empty(charitable_get_option('gateways_chip')['due_strict_timing'])) {
                     $purchase_params['due'] = time() + abs((int)charitable_get_option('gateways_chip')['due_strict_timing']) * 60;
                 }
             }
@@ -435,10 +433,10 @@ if (!class_exists('Charitable_Gateway_Chip'))
 
                 $diff = array_diff($payment_method_whitelist, ['fpx', 'fpx_b2b1', 'mastercard', 'maestro', 'visa', 'razer_atome', 'razer_grabpay', 'razer_maybankqr', 'razer_shopeepay', 'razer_tng', 'duitnow_qr']);
                 if (empty($diff)) {
-                  $purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
+                    $purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
                 }
-            } 
-            
+            }
+
             // Check first if brand ID and secret key configured
             $credentials = array(
                 $secret_key,
@@ -466,18 +464,23 @@ if (!class_exists('Charitable_Gateway_Chip'))
          */
         private function getCancelUrl($donation)
         {
-            $cancel_url = charitable_get_permalink('donation_cancel_page',
+            $cancel_url = charitable_get_permalink(
+                'donation_cancel_page',
                 array(
                     'donation_id' => $donation->ID
-                ));
-            
+                )
+            );
+
             if (! $cancel_url) {
                 $cancel_url = esc_url(
                     add_query_arg(
                         array(
                             'donation_id' => $donation->ID,
                             'cancel' => true
-                        ), wp_get_referer()));
+                        ),
+                        wp_get_referer()
+                    )
+                );
             }
             return $cancel_url;
         }
@@ -527,14 +530,14 @@ if (!class_exists('Charitable_Gateway_Chip'))
             );
 
             error_log('Brand ID: ' . $brand_id);
-            
+
             // CHIP API (Checking for transaction status)
             $gateway = new Charitable_Gateway_Chip();
             $chip = new Chip($credentials);
             $response = $chip->get_payment($transaction_id);    // check if transaction_id exist
 
             // Check if CHIP transaction is paid
-            if (isset($response)){
+            if (isset($response)) {
                 // Check if donation ID same
                 $donation_id = $response['reference'];
                 $amount = $response['purchase']['total'];
@@ -551,8 +554,12 @@ if (!class_exists('Charitable_Gateway_Chip'))
                         // Set donation to failed
                         error_log('Donation key missing for donation ID: ' . $donation_id);
                         $message = sprintf(
-                            __('The donation key in the response does not match the donation. Response data: %s',
-                                'charitable-chip'), json_encode($_REQUEST));
+                            __(
+                                'The donation key in the response does not match the donation. Response data: %s',
+                                'charitable-chip'
+                            ),
+                            json_encode($_REQUEST)
+                        );
                         self::update_donation_log($donation, $message);
                         $donation->update_status('charitable-failed');
                         return;
@@ -564,7 +571,10 @@ if (!class_exists('Charitable_Gateway_Chip'))
                         $message = sprintf(
                             __(
                                 'The amount in the response does not match the expected donation amount. Response data: %s',
-                                'charitable-chip'), json_encode($_REQUEST));
+                                'charitable-chip'
+                            ),
+                            json_encode($_REQUEST)
+                        );
                         self::update_donation_log($donation, $message);
                         $donation->update_status('charitable-failed');
                         return;
@@ -574,10 +584,12 @@ if (!class_exists('Charitable_Gateway_Chip'))
 
                     // Donation status is paid
                     $message = sprintf(
-                        __('CHIP Transaction ID: %s and Payment Method: %s', 'charitable-chip'), $transaction_id,
-                        $payment_method);
+                        __('CHIP Transaction ID: %s and Payment Method: %s', 'charitable-chip'),
+                        $transaction_id,
+                        $payment_method
+                    );
                     self::update_donation_log($donation, $message);
-                    
+
                     // Lock the row
                     self::get_lock($donation_id);
 
@@ -594,11 +606,15 @@ if (!class_exists('Charitable_Gateway_Chip'))
                         __(
                             'Unfortunately, your donation was declined by our payment gateway.
                             <br><b>Donation Number:</b> %s
-                            <br><b>Transaction ID:</b> %s', 'charitable-chip'), $donation->ID, $transaction_id,
-                        );
+                            <br><b>Transaction ID:</b> %s',
+                            'charitable-chip'
+                        ),
+                        $donation->ID,
+                        $transaction_id,
+                    );
                     self::update_donation_log($donation, $message);
                     $donation->update_status('charitable-failed');
-                    
+
                     $message .= "<br><br><a href=" . $gateway->getCancelURL($donation) . ">Go Back</a></div>";
                     die(__($message, 'charitable'));
                     return;
@@ -608,12 +624,15 @@ if (!class_exists('Charitable_Gateway_Chip'))
                 $message = sprintf(
                     __(
                         'Error. Response data: %s',
-                        'charitable-chip'), json_encode($_REQUEST));
+                        'charitable-chip'
+                    ),
+                    json_encode($_REQUEST)
+                );
                 self::update_donation_log($donation, $message);
                 $donation->update_status('charitable-failed');
                 return;
             }
-            
+
             // return;
         }
 
@@ -623,43 +642,41 @@ if (!class_exists('Charitable_Gateway_Chip'))
         public function get_default_gateway_notice()
         {
             ob_start();
-                  
-            printf(__('CHIP is not set as default payment gateway. %sSet as Default%s', 'charitable-chip'),
-                '<a href="#" class="button" data-change-default-gateway>', '</a>')?>
 
-			<script>
-			(function($)
-			{
-				$('[data-change-default-gateway]').on('click', function() 
-				{
-					var $this = $(this);
-			
-					$.ajax({
-								type: "POST",
-								data: {
-								action: 'charitable_change_gateway_to_chip', 
-								_nonce: "<?php echo wp_create_nonce( 'chip_gateway_change' ) ?>"
-							},
-						
-					url: ajaxurl,
-					success: function(response) 
-					{
-						console.log(response);
-						if (response.success)
-						{
-							$this.parents('.notice').first().slideUp();
-						}            
-					}, 
-					error: function(response) 
-					{
-						console.log(response);
-					}
-				});
-				})
-			})( jQuery );
-			</script>
-			
-			<?php
+            printf(
+                __('CHIP is not set as default payment gateway. %sSet as Default%s', 'charitable-chip'),
+                '<a href="#" class="button" data-change-default-gateway>',
+                '</a>'
+            ) ?>
+
+            <script>
+                (function($) {
+                    $('[data-change-default-gateway]').on('click', function() {
+                        var $this = $(this);
+
+                        $.ajax({
+                            type: "POST",
+                            data: {
+                                action: 'charitable_change_gateway_to_chip',
+                                _nonce: "<?php echo wp_create_nonce('chip_gateway_change') ?>"
+                            },
+
+                            url: ajaxurl,
+                            success: function(response) {
+                                console.log(response);
+                                if (response.success) {
+                                    $this.parents('.notice').first().slideUp();
+                                }
+                            },
+                            error: function(response) {
+                                console.log(response);
+                            }
+                        });
+                    })
+                })(jQuery);
+            </script>
+
+        <?php
             return ob_get_clean();
         }
 
@@ -668,15 +685,14 @@ if (!class_exists('Charitable_Gateway_Chip'))
          */
         public function change_gateway_to_chip()
         {
-            if (!wp_verify_nonce($_REQUEST['_nonce'], 'chip_gateway_change')) 
-			{
+            if (!wp_verify_nonce($_REQUEST['_nonce'], 'chip_gateway_change')) {
                 wp_send_json_error();
             }
-            
+
             $settings = get_option('charitable_settings');
             $settings['default_gateway'] = "chip";
             $updated = update_option('charitable_settings', $settings);
-            
+
             wp_send_json(array('success' => $updated));
             wp_die();
         }
@@ -692,15 +708,18 @@ if (!class_exists('Charitable_Gateway_Chip'))
         {
             ob_start();
 
-            ?>        
+        ?>
             <?php
-            printf(__('CHIP only accepts payments in Malaysian Ringgit. %sChange Now%s', 'charitable-chip'), '<a href="#" class="button" data-change-currency-to-myr>', '</a>'
+            printf(
+                __('CHIP only accepts payments in Malaysian Ringgit. %sChange Now%s', 'charitable-chip'),
+                '<a href="#" class="button" data-change-currency-to-myr>',
+                '</a>'
             )
 
             ?>
             <script>
-                (function ($) {
-                    $('[data-change-currency-to-myr]').on('click', function () {
+                (function($) {
+                    $('[data-change-currency-to-myr]').on('click', function() {
                         var $this = $(this);
 
                         $.ajax({
@@ -710,21 +729,21 @@ if (!class_exists('Charitable_Gateway_Chip'))
                                 _nonce: "<?php echo wp_create_nonce('chip_currency_change') ?>"
                             },
                             url: ajaxurl,
-                            success: function (response) {
+                            success: function(response) {
                                 console.log(response);
 
                                 if (response.success) {
                                     $this.parents('.notice').first().slideUp();
                                 }
                             },
-                            error: function (response) {
+                            error: function(response) {
                                 console.log(response);
                             }
                         });
                     })
                 })(jQuery);
             </script>
-            <?php
+<?php
             return ob_get_clean();
         }
 
@@ -768,19 +787,20 @@ if (!class_exists('Charitable_Gateway_Chip'))
         }
 
         /**
-		 * Get lock row
-		 */
-		public static function get_lock( $donation_id ) {
-            $GLOBALS['wpdb']->get_results("SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);" );
-		}
+         * Get lock row
+         */
+        public static function get_lock($donation_id)
+        {
+            $GLOBALS['wpdb']->get_results("SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);");
+        }
 
 
-		/** 
-		 * Release lock row
-		 */
-        public static function release_lock( $donation_id ) {
-            $GLOBALS['wpdb']->get_results("SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');" );
+        /** 
+         * Release lock row
+         */
+        public static function release_lock($donation_id)
+        {
+            $GLOBALS['wpdb']->get_results("SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');");
         }
     }
-
 } // End class_exists check

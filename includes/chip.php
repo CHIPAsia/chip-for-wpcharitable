@@ -1,4 +1,5 @@
 <?php
+
 /**
  * CHIP
  * used to manage CHIP API calls
@@ -13,12 +14,12 @@ class Chip
 
   public $brand_id;
   private $private_key;
-  
+
   public function __construct($option)
   {
     $this->private_key = $option[0];
     $this->brand_id    = $option[1];
-    error_log('Inside CHIP construct()'); 
+    error_log('Inside CHIP construct()');
   }
 
   public function display()
@@ -77,11 +78,13 @@ class Chip
     return $this->call('GET', "/clients/?q={$email_encoded}");
   }
 
-  public function patch_client($client_id, $params) {
+  public function patch_client($client_id, $params)
+  {
     return $this->call('PATCH', "/clients/{$client_id}/", $params);
   }
 
-  public function delete_token($purchase_id) {
+  public function delete_token($purchase_id)
+  {
     return $this->call('POST', "/purchases/$purchase_id/delete_recurring_token/");
   }
 
@@ -95,7 +98,7 @@ class Chip
   public function public_key()
   {
     $result = $this->call('GET', "/public_key/");
-    
+
     return $result;
   }
 
@@ -163,7 +166,7 @@ class Chip
 
     error_log('URL for CURL: ' . $url);
     curl_setopt($ch, CURLOPT_URL, $url);
-    
+
     if ($method == 'POST') {
       curl_setopt($ch, CURLOPT_POST, 1);
     }
@@ -186,7 +189,7 @@ class Chip
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
     // this to prevent error when account balance called
-    if ($this->require_empty_string_encoding){
+    if ($this->require_empty_string_encoding) {
       curl_setopt($ch, CURLOPT_ENCODING, '');
     }
 

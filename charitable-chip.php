@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: CHIP for WP Charitable
  * Plugin URI: https://github.com/CHIPAsia/chip-for-wpcharitable
@@ -7,7 +8,7 @@
  */
 
 // Exit if accessed directly.
-if ( ! defined( 'ABSPATH' ) ) {
+if (! defined('ABSPATH')) {
 	exit;
 }
 
@@ -15,33 +16,31 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Load plugin class, but only if Charitable is found and activated.
  * 
  */
-function charitable_chip_load() {	
-	require_once( 'includes/class-charitable-chip.php' );
+function charitable_chip_load()
+{
+	require_once('includes/class-charitable-chip.php');
 
 	$has_dependencies = true;
 
 	/* Check for Charitable */
-	if ( ! class_exists( 'Charitable' ) ) {
+	if (! class_exists('Charitable')) {
 
-		if ( ! class_exists( 'Charitable_Extension_Activation' ) ) {
+		if (! class_exists('Charitable_Extension_Activation')) {
 
 			require_once 'includes/class-charitable-extension-activation.php';
-
 		}
 
-		$activation = new Charitable_Extension_Activation( plugin_dir_path( __FILE__ ), basename( __FILE__ ) );
+		$activation = new Charitable_Extension_Activation(plugin_dir_path(__FILE__), basename(__FILE__));
 		$activation = $activation->run();
 
 		$has_dependencies = false;
-	} 
-	else {
+	} else {
 
-		new Charitable_Chip( __FILE__ );
-
-	}	
+		new Charitable_Chip(__FILE__);
+	}
 }
 
-add_action( 'plugins_loaded', 'charitable_chip_load', 1 );
+add_action('plugins_loaded', 'charitable_chip_load', 1);
 
 /*
  *  Remove Record created by this plugin
@@ -49,6 +48,6 @@ add_action( 'plugins_loaded', 'charitable_chip_load', 1 );
 register_uninstall_hook(__FILE__, 'charitable_chip_uninstall');
 function charitable_chip_uninstall()
 {
-    global $wpdb;
-    $wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'chip_charitable_bill_id_%'");
+	global $wpdb;
+	$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE 'chip_charitable_bill_id_%'");
 }

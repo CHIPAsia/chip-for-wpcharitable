@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Charitable CHIP Gateway Hooks.
  *
@@ -17,7 +18,7 @@ if (!defined('ABSPATH')) {
  * @see     Charitable_Gateway_Chip::process_donation()
  */
 // add_filter('charitable_process_donation_chip', array('Charitable_Gateway_Chip', 'redirect_to_processing'), 10, 3);
-if ( -1 == version_compare( charitable()->get_version(), '1.3.0' ) ) {
+if (-1 == version_compare(charitable()->get_version(), '1.3.0')) {
     /** 
      * This is for backwards-compatibility. Charitable before 1.3 used on action hook, not a filter.
      * 
@@ -25,9 +26,8 @@ if ( -1 == version_compare( charitable()->get_version(), '1.3.0' ) ) {
      */
     // add_action( 'charitable_process_donation_chip', array( 'Charitable_Gateway_Chip', 'redirect_to_processing_legacy' ) );
     error_log('Calling redirect_to_processing_legacy()');
-}
-else {
-    add_filter( 'charitable_process_donation_chip', array( 'Charitable_Gateway_Chip', 'redirect_to_processing' ), 10, 2 );
+} else {
+    add_filter('charitable_process_donation_chip', array('Charitable_Gateway_Chip', 'redirect_to_processing'), 10, 2);
 }
 
 /**
@@ -35,7 +35,7 @@ else {
  *
  * @see Charitable_Gateway_Chip::set_email_field_required()
  */
-add_filter( 'charitable_donation_form_user_fields', array( 'Charitable_Gateway_Chip', 'set_email_field_required' ) );
+add_filter('charitable_donation_form_user_fields', array('Charitable_Gateway_Chip', 'set_email_field_required'));
 
 /**
  * Handle public key
@@ -79,4 +79,4 @@ add_action('init', array('Charitable_Gateway_Chip', 'callback_listener'));
  *
  * @see Charitable_Gateway_Chip::change_gateway_to_chip())
  */
-add_action( 'wp_ajax_charitable_change_gateway_to_chip', array('Charitable_Gateway_Chip', 'change_gateway_to_chip'));
+add_action('wp_ajax_charitable_change_gateway_to_chip', array('Charitable_Gateway_Chip', 'change_gateway_to_chip'));

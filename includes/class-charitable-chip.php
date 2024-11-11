@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The main Charitable Chip class.
  *
@@ -6,16 +7,18 @@
  *
  */
 
-if ( ! defined( 'ABSPATH' ) ) { exit; // Exit if accessed directly
+if (! defined('ABSPATH')) {
+	exit; // Exit if accessed directly
 }
-if ( ! class_exists( 'Charitable_Chip' ) ) :
+if (! class_exists('Charitable_Chip')) :
 
 	/**
 	 * Charitable_Chip
 	 * 
 	 * @since   1.0.0
 	 */
-	class Charitable_Chip {
+	class Charitable_Chip
+	{
 
 		/**
 		 * @var string
@@ -25,7 +28,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		/**
 		 * @var string  A date in the format: YYYYMMDD
 		 */
-		const DB_VERSION = '20241029'; 
+		const DB_VERSION = '20241029';
 
 		/**
 		 * @var string The product name.
@@ -78,13 +81,13 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @return  void
 		 * @since   1.0.0
 		 */
-		public function __construct( $plugin_file ) 
+		public function __construct($plugin_file)
 		{
 			$this->plugin_file      = $plugin_file;
-			$this->directory_path   = plugin_dir_path( $plugin_file );
-			$this->directory_url    = plugin_dir_url( $plugin_file );
+			$this->directory_path   = plugin_dir_path($plugin_file);
+			$this->directory_url    = plugin_dir_url($plugin_file);
 
-			add_action( 'charitable_start', array( $this, 'start' ), 1 );
+			add_action('charitable_start', array($this, 'start'), 1);
 		}
 
 		/**
@@ -93,7 +96,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @return  Charitable
 		 * @since   1.0.0
 		 */
-		public static function get_instance() 
+		public static function get_instance()
 		{
 			return self::$instance;
 		}
@@ -107,11 +110,10 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function start() 
+		public function start()
 		{
 			// If we've already started (i.e. run this function once before), do not pass go.
-			if ( $this->started() ) 
-			{
+			if ($this->started()) {
 				return;
 			}
 
@@ -123,7 +125,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 			$this->attach_hooks_and_filters();
 
 			// Hook in here to do something when the plugin is first loaded.
-			do_action( 'charitable_chip_start', $this );
+			do_action('charitable_chip_start', $this);
 		}
 
 		/**
@@ -133,12 +135,12 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  private
 		 * @since   1.0.0
 		 */
-		private function load_dependencies() 
+		private function load_dependencies()
 		{
-			require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip.php' );
-			require_once( $this->get_path( 'includes' ) . 'gateway/charitable-chip-gateway-hooks.php' );
-            require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip-callback-listener.php' );
-            require_once( $this->get_path( 'includes' ) . 'chip.php' );
+			require_once($this->get_path('includes') . 'gateway/class-charitable-gateway-chip.php');
+			require_once($this->get_path('includes') . 'gateway/charitable-chip-gateway-hooks.php');
+			require_once($this->get_path('includes') . 'gateway/class-charitable-gateway-chip-callback-listener.php');
+			require_once($this->get_path('includes') . 'chip.php');
 		}
 
 		/**
@@ -146,13 +148,12 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 */
 		public static function store_public_key()
 		{
-			
+
 			if ($settings = get_option('charitable_settings')) {
-				
+
 				// $settings = get_option('charitable_settings');
 
-				if (isset($settings['gateways_chip']['brand_id']) && isset( $settings['gateways_chip']['secret_key']))
-				{
+				if (isset($settings['gateways_chip']['brand_id']) && isset($settings['gateways_chip']['secret_key'])) {
 					error_log('Setting Public Key option');
 
 					// Check if secret_key and brand_id set
@@ -167,7 +168,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 					$chip = new Chip($credentials);
 
 					$settings['gateways_chip']['public_key'] = $chip->public_key();
-	
+
 					update_option('charitable_settings', $settings);
 				}
 			}
@@ -181,11 +182,11 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  private
 		 * @since   1.0.0
 		 */
-		private function attach_hooks_and_filters() 
+		private function attach_hooks_and_filters()
 		{
 
-			add_filter( 'plugin_action_links_' . plugin_basename( $this->get_path() ), array( $this, 'add_plugin_action_links' ) );
-			add_filter( 'charitable_payment_gateways', array( $this, 'register_gateway' ) );
+			add_filter('plugin_action_links_' . plugin_basename($this->get_path()), array($this, 'add_plugin_action_links'));
+			add_filter('charitable_payment_gateways', array($this, 'register_gateway'));
 		}
 
 		/**
@@ -196,22 +197,20 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function add_plugin_action_links( $links ) 
+		public function add_plugin_action_links($links)
 		{
-			$link = add_query_arg( array(
+			$link = add_query_arg(array(
 				'page'  => 'charitable-settings',
 				'tab'   => 'gateways',
-			), admin_url( 'admin.php' ) );
+			), admin_url('admin.php'));
 
-			$link_text = __( 'Settings', 'charitable-chip' );
+			$link_text = __('Settings', 'charitable-chip');
 
-			if ( charitable_get_helper( 'gateways' )->is_active_gateway( 'chip' ) ) 
-			{
+			if (charitable_get_helper('gateways')->is_active_gateway('chip')) {
 
-				$link = add_query_arg( array(
+				$link = add_query_arg(array(
 					'group' => 'gateways_chip',
-				), $link );
-
+				), $link);
 			}
 
 			$links[] = "<a href=\"$link\">$link_text</a>";
@@ -227,7 +226,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function register_gateway( $gateways ) 
+		public function register_gateway($gateways)
 		{
 			$gateways['chip'] = 'Charitable_Gateway_Chip';
 			return $gateways;
@@ -252,9 +251,9 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function started() 
+		public function started()
 		{
-			return did_action( 'charitable_chip_start' ) || current_filter() == 'charitable_chip_start';
+			return did_action('charitable_chip_start') || current_filter() == 'charitable_chip_start';
 		}
 
 		/**
@@ -264,7 +263,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function get_version() 
+		public function get_version()
 		{
 			return self::VERSION;
 		}
@@ -277,24 +276,24 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @return  string
 		 * @since   1.0.0
 		 */
-		public function get_path( $type = '', $absolute_path = true ) 
+		public function get_path($type = '', $absolute_path = true)
 		{
 			$base = $absolute_path ? $this->directory_path : $this->directory_url;
 
-			switch ( $type ) {
-				case 'includes' :
+			switch ($type) {
+				case 'includes':
 					$path = $base . 'includes/';
 					break;
 
-				case 'templates' :
+				case 'templates':
 					$path = $base . 'templates/';
 					break;
 
-				case 'directory' :
+				case 'directory':
 					$path = $base;
 					break;
 
-				default :
+				default:
 					$path = $this->plugin_file;
 			}
 
@@ -309,16 +308,15 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function register_object( $object ) 
+		public function register_object($object)
 		{
-			if ( ! is_object( $object ) ) 
-			{
+			if (! is_object($object)) {
 				return;
 			}
 
-			$class = get_class( $object );
+			$class = get_class($object);
 
-			$this->registry[ $class ] = $object;
+			$this->registry[$class] = $object;
 		}
 
 		/**
@@ -329,9 +327,9 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @since   1.0.0
 		 */
-		public function get_object( $class ) 
+		public function get_object($class)
 		{
-			return isset( $this->registry[ $class ] ) ? $this->registry[ $class ] : false;
+			return isset($this->registry[$class]) ? $this->registry[$class] : false;
 		}
 
 		/**
@@ -343,9 +341,9 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @return  void
 		 */
-		public function __clone() 
+		public function __clone()
 		{
-			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'charitable-chip' ), '1.0.0' );
+			_doing_it_wrong(__FUNCTION__, __('Cheatin&#8217; huh?', 'charitable-chip'), '1.0.0');
 		}
 
 		/**
@@ -355,9 +353,9 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @access  public
 		 * @return  void
 		 */
-		public function __wakeup() 
+		public function __wakeup()
 		{
-			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'charitable-chip' ), '1.0.0' );
+			_doing_it_wrong(__FUNCTION__, __('Cheatin&#8217; huh?', 'charitable-chip'), '1.0.0');
 		}
 	}
 
