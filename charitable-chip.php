@@ -4,7 +4,11 @@
  * Plugin Name: CHIP for WP Charitable
  * Plugin URI: https://github.com/CHIPAsia/chip-for-wpcharitable
  * Description: CHIP - Digital Finance Platform
- * Version: 1.0
+ * Version: 1.0.0
+ * Requires PHP: 7.1
+ * Copyright: © 2024 CHIP
+ * License: GNU General Public License v3.0
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 // Exit if accessed directly.

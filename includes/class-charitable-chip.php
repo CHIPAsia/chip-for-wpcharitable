@@ -22,7 +22,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		/**
 		 * @var string
 		 */
-		const VERSION = '1.0';
+		const VERSION = '1.0.0';
 
 		/**
 		 * @var string  A date in the format: YYYYMMDD
