@@ -17,7 +17,6 @@ class Chip {
 	public function __construct( $option ) {
 		$this->private_key = $option[0];
 		$this->brand_id = $option[1];
-		error_log( 'Inside CHIP construct()' );
 	}
 
 	public function display() {
@@ -25,7 +24,6 @@ class Chip {
 	}
 
 	public function create_payment( $params ) {
-		error_log( 'CHIP API create_payment() triggered' );
 		return $this->call( 'POST', '/purchases/', $params );
 	}
 
@@ -107,7 +105,6 @@ class Chip {
 	}
 
 	private function call( $method, $route, $params = [] ) {
-		error_log( 'Inside CHIP API call() function' );
 		$private_key = $this->private_key;
 		if ( ! empty( $params ) ) {
 			$params = json_encode( $params );
@@ -125,28 +122,19 @@ class Chip {
 
 		$result = json_decode( $response, true );
 		if ( ! $result ) {
-			error_log( 'Inside CHIP API: !result' );
 			return 'Errorrr woi';
 		}
 
 		if ( ! empty( $result['errors'] ) ) {
-			error_log( 'Inside CHIP API: !empty($result[errors])' );
 			return 'Errorrr woi 2';
 		}
-
-		// error_log('Displaying result from CHIP API');
-		// error_log(print_r($result));
 
 		return $result;
 	}
 
 	private function request( $method, $url, $params = [], $headers = [] ) {
-		error_log( 'Inside CHIP API: request() function' );
 		$ch = curl_init();
 
-		error_log( 'Params: ' . print_r( $params, true ) );
-
-		error_log( 'URL for CURL: ' . $url );
 		curl_setopt( $ch, CURLOPT_URL, $url );
 
 		if ( $method == 'POST' ) {
@@ -176,9 +164,6 @@ class Chip {
 		}
 
 		$response = curl_exec( $ch );
-
-		error_log( 'Response from CURL' );
-		error_log( print_r( $response, true ) );
 
 		curl_close( $ch );
 

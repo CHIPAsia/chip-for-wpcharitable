@@ -6,7 +6,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 		const QUERY_DONATION_KEY = 'donation_key';
 
 		function __construct() {
-			error_log( 'Construct in Listener' );
 
 			// Check if chip_charitable_id is set
 			if ( isset( $_GET[ self::QUERY_CC_ID ] ) ) {
@@ -14,33 +13,25 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 
 				// Check if donation exist
 				if ( is_null( $donation->donation_id ) ) {
-					error_log( 'Donation with ID ' . $_GET['donation_id'] . ' does not exist, exiting callback' );
 					return;
 				}
 
 				// Check status of donation
 				if ( $donation->post_status == 'charitable-completed' ) {
-					error_log( 'Donation with ID ' . $donation->ID . ' status is PAID, exiting callback' );
 					return;
-				} else {
-					error_log( 'Donation with ID ' . $donation->ID . ' status is ' . $donation->post_status );
 				}
 
 				// The response ?donation_receipt=1&donation_id=240&donation_key=58a0989046bdeebded682090a9**
 				// donation_key exist and verify
 				if ( isset( $_GET['donation_key'] ) ) {
 					if ( $donation->get_donation_key() != $_GET[ self::QUERY_DONATION_KEY ] ) {
-						error_log( 'Missmatch donation key: ' . $_GET['donation_key'] );
 						return;
-					} else {
-						error_log( 'Donation Key is ' . $_GET['donation_key'] );
 					}
 				}
 
 				// Listen for callback
 				$this->listen();
 			} else {
-				error_log( 'Parameter chip_charitable_id is not set, callback exit' );
 				return;
 			}
 		}
@@ -59,25 +50,21 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 		private function listen() {
 			// Check for donation_key
 			if ( ! isset( $_GET[ self::QUERY_DONATION_KEY ] ) ) {
-				error_log( 'No donation key parameter is set' );
 				exit;
 			}
 
 			// Set donation ID
 			if ( empty( $donation_id = intval( $_GET[ self::QUERY_CC_ID ] ) ) ) {
-				error_log( 'Donation ID parameter is empty' );
 				exit;
 			} else {
 				// Get Input
 				if ( empty( $content = file_get_contents( 'php://input' ) ) ) {
-					error_log( 'No input received for donation ID: ' . $donation_id );
 					exit;
 				}
 			}
 
 			// Check X-Signature is set
 			if ( ! isset( $_SERVER['HTTP_X_SIGNATURE'] ) ) {
-				error_log( 'No X Signature received from headers for donation ID: ' . $donation_id );
 				exit;
 			}
 
@@ -92,39 +79,29 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 				'sha256WithRSAEncryption'
 			);
 
-			error_log( 'X-Signature ' . $_SERVER['HTTP_X_SIGNATURE'] );
-			error_log( 'X-Signature status: ' . $verification_result );
-
 			// Verify X-Signature
 			if ( openssl_verify( $content, base64_decode( $_SERVER['HTTP_X_SIGNATURE'] ), $public_key, 'sha256WithRSAEncryption' ) != 1 ) {
 				header( 'Forbidden', true, 403 );
-				error_log( 'Invalid X Signature for donation ID: ' . $donation_id );
 				exit;
-			} else {
-				error_log( 'Verified X-Signature' );
 			}
 
 			// Lock row
 			$this->get_lock( $donation_id );
 
 			$this->update_order_status( $donation_id, $content );
-			error_log( 'Successful Callback for donation_id: ' . $donation_id );
 		}
 
 		private function update_order_status( $donation_id, $content ) {
-			error_log( 'In update_order_status callback' );
 			$donation = new Charitable_Donation( $donation_id );
 
 			// Check status of donation
 			if ( $donation->post_status == 'charitable-completed' ) {
-				error_log( 'Donation with ID ' . $donation->ID . ' status is PAID' );
 				return;
 			}
 
 			// json_decode $content (string)
 			$content = json_decode( $content, true );
 
-			error_log( 'Updating donation status to PAID ' );
 			// $gateway = new Charitable_Gateway_Chip();
 			// $keys = $gateway->get_keys();
 			$payment_method = $content['transaction_data']['payment_method'];
@@ -140,9 +117,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 
 			// Update donation status to complete
 			$donation->update_status( 'charitable-completed' );
-
-			// Log 
-			error_log( 'Donation ID' . $donation_id . 'status successfully updated to PAID ' );
 
 			// Release lock
 			$this->release_lock( $donation_id );

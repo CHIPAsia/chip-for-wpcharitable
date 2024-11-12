@@ -148,7 +148,6 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 				// $settings = get_option('charitable_settings');
 
 				if ( isset( $settings['gateways_chip']['brand_id'] ) && isset( $settings['gateways_chip']['secret_key'] ) ) {
-					error_log( 'Setting Public Key option' );
 
 					// Check if secret_key and brand_id set
 					$brand_id = $settings['gateways_chip']['brand_id'];

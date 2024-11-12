@@ -24,8 +24,7 @@ if ( -1 == version_compare( charitable()->get_version(), '1.3.0' ) ) {
 	 * 
 	 * @see     Charitable_Gateway_Chip::redirect_to_processing_legacy()
 	 */
-	// add_action( 'charitable_process_donation_chip', array( 'Charitable_Gateway_Chip', 'redirect_to_processing_legacy' ) );
-	error_log( 'Calling redirect_to_processing_legacy()' );
+	add_action( 'charitable_process_donation_chip', array( 'Charitable_Gateway_Chip', 'redirect_to_processing_legacy' ) );
 } else {
 	add_filter( 'charitable_process_donation_chip', array( 'Charitable_Gateway_Chip', 'redirect_to_processing' ), 10, 2 );
 }

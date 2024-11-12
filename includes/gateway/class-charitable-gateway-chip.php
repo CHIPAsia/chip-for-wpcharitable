@@ -123,14 +123,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			//     // Checking response
 			//     if (array_key_exists("available_payment_methods",$response)) {
 			//         $available_payment_methods = $response['available_payment_methods'];
-			//         error_log('Successfully get available payment methods');
 			//     } else {
 			//         $available_payment_methods = [];
-			//         error_log('Failed to get available payment methods');
 			//     }
 			// } else {
 			//     $available_payment_methods = [];
-			//     error_log('Missing secret key or brand ID');
 			// }
 
 			$settings['payment_method_whitelist'] = array(
@@ -141,18 +138,18 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'default' => [ 'fpx' ],
 				// 'default' => $available_payment_methods,
 				'options' => array(
-						'fpx' => __( 'FPX', 'fpx' ),
-						'fpx_b2b1' => __( 'FPX B2B', 'fpx_b2b1' ),
-						'mastercard' => __( 'Mastercard', 'mastercard' ),
-						'maestro' => __( 'Maestro', 'maestro' ),
-						'visa' => __( 'Visa', 'visa' ),
-						'razer_atome' => __( 'Razer Atome', 'razer_atome' ),
-						'razer_grabpay' => __( 'Razer GrabPay', 'razer_grabpay' ),
-						'razer_maybankqr' => __( 'Razer MaybankQR', 'razer_maybankqr' ),
-						'razer_shopeepay' => __( 'Razer ShopeePay', 'razer_shopeepay' ),
-						'razer_tng' => __( 'Razer TnG', 'razer_tng' ),
-						'duitnow_qr' => __( 'DuitNow QR', 'duitnow_qr' ),
-					),
+					'fpx' => __( 'FPX', 'fpx' ),
+					'fpx_b2b1' => __( 'FPX B2B', 'fpx_b2b1' ),
+					'mastercard' => __( 'Mastercard', 'mastercard' ),
+					'maestro' => __( 'Maestro', 'maestro' ),
+					'visa' => __( 'Visa', 'visa' ),
+					'razer_atome' => __( 'Razer Atome', 'razer_atome' ),
+					'razer_grabpay' => __( 'Razer GrabPay', 'razer_grabpay' ),
+					'razer_maybankqr' => __( 'Razer MaybankQR', 'razer_maybankqr' ),
+					'razer_shopeepay' => __( 'Razer ShopeePay', 'razer_shopeepay' ),
+					'razer_tng' => __( 'Razer TnG', 'razer_tng' ),
+					'duitnow_qr' => __( 'DuitNow QR', 'duitnow_qr' ),
+				),
 				// 'required'  => true,
 			);
 
@@ -163,9 +160,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'help' => 'Enforce due strict payment timeframe to block payment after due strict timing is passed',
 				'default' => 0,
 				'options' => array(
-						'1' => __( 'Yes', 'charitable' ),
-						'0' => __( 'No', 'charitable' ),
-					),
+					'1' => __( 'Yes', 'charitable' ),
+					'0' => __( 'No', 'charitable' ),
+				),
 				// 'required'  => true,
 			);
 
@@ -184,9 +181,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'help' => 'Select Yes to ask CHIP to send receipt upon successful payment. If activated, CHIP will send purchase receipt upon payment completion.',
 				'default' => 0,
 				'options' => array(
-						'1' => __( 'Yes', 'charitable' ),
-						'0' => __( 'No', 'charitable' ),
-					),
+					'1' => __( 'Yes', 'charitable' ),
+					'0' => __( 'No', 'charitable' ),
+				),
 				// 'required'  => true,
 			);
 
@@ -265,7 +262,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		 * Process the donation with CHIP
 		 */
 		public static function process_donation( $content, Charitable_Donation $donation ) {
-			error_log( 'Inside process_donation function' );
+
 			// new Charitable_Gateway_Chip
 			$gateway = new Charitable_Gateway_Chip();
 
@@ -370,7 +367,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			//         $email = charitable_get_option('gateways_chip')['email_fallback'];
 			//     }
 			// } else {
-			//     error_log('Error, no email set for donation ID: ' . $donation->ID);
 			//     $message = sprintf(
 			//         __(
 			//             'Error caused by empty email . Response data: %s',
@@ -420,8 +416,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			// Set payment method whitelist
 			if ( isset( charitable_get_option( 'gateways_chip' )['payment_method_whitelist'] ) ) {
 				$payment_method_whitelist = charitable_get_option( 'gateways_chip' )['payment_method_whitelist'];
-
-				error_log( 'Payment method whitelist: ' . print_r( $payment_method_whitelist, true ) );
 
 				$diff = array_diff( $payment_method_whitelist, [ 'fpx', 'fpx_b2b1', 'mastercard', 'maestro', 'visa', 'razer_atome', 'razer_grabpay', 'razer_maybankqr', 'razer_shopeepay', 'razer_tng', 'duitnow_qr' ] );
 				if ( empty( $diff ) ) {
@@ -497,8 +491,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		 * @since   1.0.0
 		 */
 		public static function process_response( Charitable_Donation $donation ) {
-			// return;
-			error_log( 'Running process_response() function' );
 
 			// Check if the donation status is complete
 			if ( get_post_status( $donation->ID ) == 'charitable-completed' ) {
@@ -517,8 +509,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$secret_key,
 				$brand_id
 			);
-
-			error_log( 'Brand ID: ' . $brand_id );
 
 			// CHIP API (Checking for transaction status)
 			$gateway = new Charitable_Gateway_Chip();
@@ -540,8 +530,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				if ( $response['status'] == 'paid' ) {
 					// Verify for donation_key
 					if ( $donation_key != $donation->get_donation_key() ) {
+
 						// Set donation to failed
-						error_log( 'Donation key missing for donation ID: ' . $donation_id );
 						$message = sprintf(
 							__(
 								'The donation key in the response does not match the donation. Response data: %s',
@@ -556,7 +546,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 					// Verify the amount of donation with API
 					if ( $amount != ( $donation->get_total_donation_amount() * 100 ) ) {
-						error_log( 'Donation amount mismatch for donation ID: ' . $donation_id );
+
 						$message = sprintf(
 							__(
 								'The amount in the response does not match the expected donation amount. Response data: %s',
@@ -568,8 +558,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 						$donation->update_status( 'charitable-failed' );
 						return;
 					}
-
-					error_log( 'Donation is paid for donation ID  ' . $donation_id . ' with transaction ID ' . $transaction_id );
 
 					// Donation status is paid
 					$message = sprintf(
@@ -590,7 +578,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 					return;
 				} else {
-					error_log( 'Status unpaid for donation ID: ' . $donation->ID . ' with transaction ID ' . $transaction_id );
 					$message = sprintf(
 						__(
 							'Unfortunately, your donation was declined by our payment gateway.
@@ -609,7 +596,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					return;
 				}
 			} else {
-				error_log( 'No response from CHIP API for donation ID: ' . $donation->ID . ' with transaction ID ' . $transaction_id );
 				$message = sprintf(
 					__(
 						'Error. Response data: %s',
