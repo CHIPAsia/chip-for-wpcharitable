@@ -32,12 +32,12 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		/**
 		 * @var string The product name.
 		 */
-		const NAME = 'Chip for WP Charitable';
+		const NAME = 'CHIP for WP Charitable';
 
 		/**
 		 * @var string The product author.
 		 */
-		const AUTHOR = 'CHIP IN';
+		const AUTHOR = 'CHIP IN SDN. BHD.';
 
 		/**
 		 * @var Charitable_Chip
