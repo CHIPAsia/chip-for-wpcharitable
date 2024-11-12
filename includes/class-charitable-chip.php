@@ -135,7 +135,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 			require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip.php' );
 			require_once( $this->get_path( 'includes' ) . 'gateway/charitable-chip-gateway-hooks.php' );
 			require_once( $this->get_path( 'includes' ) . 'gateway/class-charitable-gateway-chip-callback-listener.php' );
-			require_once( $this->get_path( 'includes' ) . 'chip.php' );
+			require_once( $this->get_path( 'includes' ) . 'chip-charitable-api.php' );
 		}
 
 		/**
@@ -158,7 +158,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 						$brand_id
 					);
 
-					$chip = new Chip( $credentials );
+					$chip = new Chip_Charitable_API( $credentials );
 
 					$settings['gateways_chip']['public_key'] = $chip->public_key();
 

@@ -113,7 +113,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			// Get the available payment methods
 			// if (isset(charitable_get_option('gateways_chip')['secret_key']) && isset(charitable_get_option('gateways_chip')['brand_id'])) {
-			//     $chip = new Chip([
+			//     $chip = new Chip_Charitable_API([
 			//         charitable_get_option('gateways_chip')['secret_key'],
 			//         charitable_get_option('gateways_chip')['brand_id']
 			//     ]);
@@ -428,7 +428,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$secret_key,
 				$brand_id
 			);
-			$chip = new Chip( $credentials );
+			$chip = new Chip_Charitable_API( $credentials );
 
 			$response = $chip->create_payment( $purchase_params );
 
@@ -512,7 +512,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			// CHIP API (Checking for transaction status)
 			$gateway = new Charitable_Gateway_Chip();
-			$chip = new Chip( $credentials );
+			$chip = new Chip_Charitable_API( $credentials );
 			$response = $chip->get_payment( $transaction_id );    // check if transaction_id exist
 
 			// Check if CHIP transaction is paid

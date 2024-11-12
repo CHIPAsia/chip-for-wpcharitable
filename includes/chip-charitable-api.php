@@ -5,10 +5,11 @@
  * used to manage CHIP API calls
  * 
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit('No direct script access allowed');
+}
 
-// defined('BASEPATH') or exit('No direct script access allowed');
-
-class Chip {
+class Chip_Charitable_API {
 	private $require_empty_string_encoding = false;
 
 	public $brand_id;
