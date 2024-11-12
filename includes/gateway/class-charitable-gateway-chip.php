@@ -31,10 +31,10 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		 * @since   1.0.0
 		 */
 		public function __construct() {
-			$this->name = apply_filters( 'charitable_gateway_chip_name', __( 'CHIP', 'charitable-chip' ) );
+			$this->name = apply_filters( 'charitable_gateway_chip_name', __( 'CHIP', 'chip-for-wpcharitable' ) );
 
 			$this->defaults = array(
-				'label' => __( 'CHIP', 'charitable-chip' ),
+				'label' => __( 'CHIP', 'chip-for-wpcharitable' ),
 			);
 
 			$this->supports = array(
@@ -90,7 +90,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$settings['brand_id'] = array(
 				'type' => 'text',
-				'title' => __( 'Brand ID', 'charitable-chip' ),
+				'title' => __( 'Brand ID', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Enter your CHIP Brand ID. Get this key from Developers >> Brands',
 				'required' => true,
@@ -98,7 +98,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$settings['secret_key'] = array(
 				'type' => 'text',
-				'title' => __( 'Secret Key', 'charitable-chip' ),
+				'title' => __( 'Secret Key', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Enter your CHIP Secret Key. Get this key from Developer >> Keys',
 				'required' => true,
@@ -106,7 +106,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$settings['public_key'] = array(
 				'type' => 'textarea',
-				'title' => __( 'Public Key', 'charitable-chip' ),
+				'title' => __( 'Public Key', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Public Key will be generated once Brand ID and Secret Key are set',
 			);
@@ -135,7 +135,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$settings['payment_method_whitelist'] = array(
 				'type' => 'multi-checkbox',
-				'title' => __( 'Payment Method Whitelist', 'charitable-chip' ),
+				'title' => __( 'Payment Method Whitelist', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Set payment method whitelist separated by comma. Acceptable value: fpx, fpx_b2b1, mastercard, maestro, visa, razer_atome, razer_grabpay, razer_maybankqr, razer_shopeepay, razer_tng, duitnow_qr. Leave blank if unsure.',
 				'default' => [ 'fpx' ],
@@ -158,7 +158,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$settings['due_strict'] = array(
 				'type' => 'radio',
-				'title' => __( 'Due Strict', 'charitable-chip' ),
+				'title' => __( 'Due Strict', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Enforce due strict payment timeframe to block payment after due strict timing is passed',
 				'default' => 0,
@@ -172,14 +172,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$settings['due_strict_timing'] = array(
 				'type' => 'number',
 				'default' => 60,
-				'title' => __( 'Due Strict Timing', 'charitable-chip' ),
+				'title' => __( 'Due Strict Timing', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Due strict timing in minutes. Default value is: 60.',
 			);
 
 			$settings['purchase_send_receipt'] = array(
 				'type' => 'radio',
-				'title' => __( 'Purchase Send Receipt', 'charitable-chip' ),
+				'title' => __( 'Purchase Send Receipt', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Select Yes to ask CHIP to send receipt upon successful payment. If activated, CHIP will send purchase receipt upon payment completion.',
 				'default' => 0,
@@ -192,7 +192,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			// $settings['email_fallback'] = array(
 			//     'type'      => 'email',
-			//     'title'     => __('Email Fallback', 'charitable-chip'),
+			//     'title'     => __('Email Fallback', 'chip-for-wpcharitable'),
 			//     'priority'  => 6,
 			//     'help'      => 'When email address is not requested to the customer, use this email address.',
 			// );
@@ -374,7 +374,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			//     $message = sprintf(
 			//         __(
 			//             'Error caused by empty email . Response data: %s',
-			//             'charitable-chip'), json_encode($_REQUEST));
+			//             'chip-for-wpcharitable'), json_encode($_REQUEST));
 			//     self::update_donation_log($donation, $message);
 			//     $donation->update_status('charitable-failed');
 			// }
@@ -545,7 +545,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 						$message = sprintf(
 							__(
 								'The donation key in the response does not match the donation. Response data: %s',
-								'charitable-chip'
+								'chip-for-wpcharitable'
 							),
 							json_encode( $_REQUEST )
 						);
@@ -560,7 +560,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 						$message = sprintf(
 							__(
 								'The amount in the response does not match the expected donation amount. Response data: %s',
-								'charitable-chip'
+								'chip-for-wpcharitable'
 							),
 							json_encode( $_REQUEST )
 						);
@@ -573,7 +573,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 					// Donation status is paid
 					$message = sprintf(
-						__( 'CHIP Transaction ID: %s and Payment Method: %s', 'charitable-chip' ),
+						__( 'CHIP Transaction ID: %s and Payment Method: %s', 'chip-for-wpcharitable' ),
 						$transaction_id,
 						$payment_method
 					);
@@ -596,7 +596,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 							'Unfortunately, your donation was declined by our payment gateway.
                             <br><b>Donation Number:</b> %s
                             <br><b>Transaction ID:</b> %s',
-							'charitable-chip'
+							'chip-for-wpcharitable'
 						),
 						$donation->ID,
 						$transaction_id,
@@ -613,7 +613,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$message = sprintf(
 					__(
 						'Error. Response data: %s',
-						'charitable-chip'
+						'chip-for-wpcharitable'
 					),
 					json_encode( $_REQUEST )
 				);
@@ -632,7 +632,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			ob_start();
 
 			printf(
-				__( 'CHIP is not set as default payment gateway. %sSet as Default%s', 'charitable-chip' ),
+				__( 'CHIP is not set as default payment gateway. %sSet as Default%s', 'chip-for-wpcharitable' ),
 				'<a href="#" class="button" data-change-default-gateway>',
 				'</a>'
 			) ?>
@@ -697,7 +697,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			?>
 			<?php
 			printf(
-				__( 'CHIP only accepts payments in Malaysian Ringgit. %sChange Now%s', 'charitable-chip' ),
+				__( 'CHIP only accepts payments in Malaysian Ringgit. %sChange Now%s', 'chip-for-wpcharitable' ),
 				'<a href="#" class="button" data-change-currency-to-myr>',
 				'</a>'
 			)

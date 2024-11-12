@@ -42,7 +42,7 @@ class Charitable_Extension_Activation {
 		if ( isset( $plugins[ $this->plugin_path . '/' . $this->plugin_file ]['Name'] ) ) {
 			$this->plugin_name = str_replace( 'Charitable - ', '', $plugins[ $this->plugin_path . '/' . $this->plugin_file ]['Name'] );
 		} else {
-			$this->plugin_name = __( 'This plugin', 'ch-edd-connect' );
+			$this->plugin_name = __( 'This plugin', 'chip-for-wpcharitable' );
 		}
 
 		// Is EDD installed?
@@ -74,12 +74,12 @@ class Charitable_Extension_Activation {
 	public function missing_charitable_notice() {
 		if ( $this->has_charitable ) {
 			$url = esc_url( wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . $this->charitable_base ), 'activate-plugin_' . $this->charitable_base ) );
-			$link = '<a href="' . $url . '">' . __( 'activate it', 'ch-edd-connect' ) . '</a>';
+			$link = '<a href="' . $url . '">' . __( 'activate it', 'chip-for-wpcharitable' ) . '</a>';
 		} else {
 			$url = esc_url( wp_nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=charitable' ), 'install-plugin_charitable' ) );
-			$link = '<a href="' . $url . '">' . __( 'install it', 'ch-edd-connect' ) . '</a>';
+			$link = '<a href="' . $url . '">' . __( 'install it', 'chip-for-wpcharitable' ) . '</a>';
 		}
 
-		echo '<div class="error"><p>' . $this->plugin_name . sprintf( __( ' requires Charitable! Please %s to continue!', 'ch-edd-connect' ), $link ) . '</p></div>';
+		echo '<div class="error"><p>' . $this->plugin_name . sprintf( __( ' requires Charitable! Please %s to continue!', 'chip-for-wpcharitable' ), $link ) . '</p></div>';
 	}
 }

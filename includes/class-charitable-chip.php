@@ -196,7 +196,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 				'tab' => 'gateways',
 			), admin_url( 'admin.php' ) );
 
-			$link_text = __( 'Settings', 'charitable-chip' );
+			$link_text = __( 'Settings', 'chip-for-wpcharitable' );
 
 			if ( charitable_get_helper( 'gateways' )->is_active_gateway( 'chip' ) ) {
 
@@ -327,7 +327,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @return  void
 		 */
 		public function __clone() {
-			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'charitable-chip' ), '1.0.0' );
+			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'chip-for-wpcharitable' ), '1.0.0' );
 		}
 
 		/**
@@ -338,7 +338,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		 * @return  void
 		 */
 		public function __wakeup() {
-			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'charitable-chip' ), '1.0.0' );
+			_doing_it_wrong( __FUNCTION__, __( 'Cheatin&#8217; huh?', 'chip-for-wpcharitable' ), '1.0.0' );
 		}
 	}
 

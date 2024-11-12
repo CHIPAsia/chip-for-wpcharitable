@@ -132,7 +132,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 
 			// Update donation log
 			$message = sprintf(
-				__( 'CHIP Transaction ID: %s and Payment Method: %s', 'charitable-chip' ),
+				__( 'CHIP Transaction ID: %s and Payment Method: %s', 'chip-for-wpcharitable' ),
 				$transaction_id,
 				$payment_method
 			);
