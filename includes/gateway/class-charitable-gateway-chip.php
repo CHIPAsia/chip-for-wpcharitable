@@ -266,9 +266,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 	               </script>" );
 			} else if ( isset( $method_data['errors'] ) ) {
 				echo ( "<div class='charitable-notice charitable-form-errors'>Error:" );
-				foreach ( $method_data['errors'] as $e ) {
-					echo ( "<div>" . $e . "</div>" );
-				}
+        		echo '<div class="error-message">' . print_r($method_data['errors'], true) . '</div>';
 				echo ( "<a href=" . $gateway->getCancelUrl( $donation ) . ">Go Back</a></div>" );
 			}
 
@@ -418,6 +416,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				// Set Charitable CHIP Gateway transaction ID
 				$donation->set_gateway_transaction_id( $response['id'] );
 				self::update_donation_log( $donation, "Checkout Link: " . print_r( $response['checkout_url'], true ) );
+			} else {
+				$method_data['errors'] = $response;
 			}
 
 			return $method_data;
