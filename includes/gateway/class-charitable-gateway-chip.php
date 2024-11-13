@@ -494,7 +494,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$response = $chip->get_payment( $transaction_id );    // check if transaction_id exist
 
 			// Check if CHIP transaction is paid
-			if ( isset( $response ) ) {
+			if ( isset( $response['id'] ) ) {
 				// Check if donation ID same
 				$donation_id = $response['reference'];
 				$amount = $response['purchase']['total'];
