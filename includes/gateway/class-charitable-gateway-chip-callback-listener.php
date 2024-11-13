@@ -86,9 +86,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 			}
 
 			// Lock row
-			$this->get_lock( $donation_id );
-
-			$this->update_order_status( $donation_id, $content );
+			if ($this->get_lock( $donation_id )) {
+				$this->update_order_status( $donation_id, $content );
+			}
 		}
 
 		private function update_order_status( $donation_id, $content ) {
@@ -128,7 +128,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 		 * Get lock row
 		 */
 		public function get_lock( $donation_id ) {
-			$GLOBALS['wpdb']->get_results( "SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);" );
+			$status = $GLOBALS['wpdb']->get_var( "SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);" );
+
+			return $status === '1';
 		}
 
 
@@ -136,7 +138,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 		 * Release lock row
 		 */
 		public function release_lock( $donation_id ) {
-			$GLOBALS['wpdb']->get_results( "SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');" );
+			$status = $GLOBALS['wpdb']->get_var( "SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');" );
+			
+			return $status === '1';
 		}
 
 		/**
