@@ -199,28 +199,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		}
 
 		/**
-		 * Return cancel_url
-		 */
-		private function get_cancel_url( $donation ) {
-			$cancel_url = charitable_get_permalink( 'donation_cancel_page', array( 'donation_id' => $donation->ID ) );
-
-			if ( ! $cancel_url ) {
-				$cancel_url = esc_url( add_query_arg(
-					array( 'donation_id' => $donation->ID, 'cancel' => true ),
-					wp_get_referer()
-				) );
-			}
-
-			return $cancel_url;
-		}
-
-		/**
-		 * Return donation page url
-		 */
-		private function get_donation_page_url( $donation ) {
-		}
-
-		/**
 		 * Return the keys to use.
 		 *
 		 * @return  string[]
@@ -325,12 +303,10 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$name = $first_name . ' ' . $last_name;
 
 			$email = $donor->get_donor_meta( 'email' );
-			$mobile = $donor->get_donor_meta( 'phone' ) ?? '';
+			$phone = $donor->get_donor_meta( 'phone' ) ?? '';
 			$amount = $donation->get_total_donation_amount( true );
 
-			$product_info = html_entity_decode( $donation->get_campaigns_donated_to(), ENT_COMPAT, 'UTF-8' );
 			$donation_key = $donation->get_donation_key();
-			$payment_gateway = $donation->get_gateway();
 
 			$keys = $gateway->get_keys();
 
@@ -381,7 +357,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'client' => array(
 					'email' => $email,
 					'full_name' => $name
-					// 'phone'
 				),
 				'success_redirect' => $success_url, // the donation receipt url page
 				// 'failure_redirect' => '',
@@ -421,6 +396,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				if ( empty( $diff ) ) {
 					$purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
 				}
+			}
+
+			// Add phone
+			if (isset($phone) && ! empty( $phone ) ) {
+				$purchase_params['phone'] = $phone;
 			}
 
 			// Check first if brand ID and secret key configured

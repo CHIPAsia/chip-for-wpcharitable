@@ -122,13 +122,6 @@ class Chip_Charitable_API {
 		);
 
 		$result = json_decode( $response, true );
-		if ( ! $result ) {
-			return 'Errorrr woi';
-		}
-
-		if ( ! empty( $result['errors'] ) ) {
-			return 'Errorrr woi 2';
-		}
 
 		return $result;
 	}
