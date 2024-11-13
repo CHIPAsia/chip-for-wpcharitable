@@ -418,7 +418,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				// Set Charitable CHIP Gateway transaction ID
 				$donation->set_gateway_transaction_id( $response['id'] );
 				self::update_donation_log( $donation, "Checkout Link: " . print_r( $response['checkout_url'], true ) );
-				// update_option('chip_charitable_bill_id_' . $bill_id, $donation->ID, false);
 			}
 
 			return $method_data;

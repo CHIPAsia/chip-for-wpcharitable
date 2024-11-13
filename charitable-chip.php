@@ -28,12 +28,3 @@ function charitable_chip_load() {
 }
 
 add_action( 'plugins_loaded', 'charitable_chip_load', 1 );
-
-/*
- *  Remove Record created by this plugin
- */
-register_uninstall_hook( __FILE__, 'charitable_chip_uninstall' );
-function charitable_chip_uninstall() {
-	global $wpdb;
-	$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'chip_charitable_bill_id_%'" );
-}
