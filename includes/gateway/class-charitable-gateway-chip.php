@@ -300,7 +300,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$first_name = $donor->get_donor_meta( 'first_name' );
 			$last_name = $donor->get_donor_meta( 'last_name' );
-			$name = $first_name . ' ' . $last_name;
 
 			$email = $donor->get_donor_meta( 'email' );
 			$phone = $donor->get_donor_meta( 'phone' ) ?? '';
@@ -356,14 +355,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$purchase_params = array(
 				'client' => array(
 					'email' => $email,
-					'full_name' => $name
+					'full_name' => substr(preg_replace('/[^A-Za-z0-9\@\/\\\(\)\.\-\_\,\&\']\ /', '', str_replace('’', '\'', $first_name . ' ' . $last_name)), 0, 128),
 				),
 				'success_redirect' => $success_url, // the donation receipt url page
 				// 'failure_redirect' => '',
 				'cancel_redirect' => $cancel_url, // donation cancel page
 				'success_callback' => $callback_url, // callback 
 				// 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
-				'creator_agent' => 'WP Charitable',
+				'creator_agent' => 'WP Charitable ' . Charitable_Chip::VERSION,
 				'reference' => $donation->ID,
 				// 'client_id'        => $client['id'],
 				'platform' => 'api', // 'charitable'
@@ -371,8 +370,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				// 'due'              => time() + (abs( (int)$params['dueStrictTiming'] ) * 60),
 				'brand_id' => $brand_id,
 				'purchase' => array(
-					//   'timezone'   => $params['purchaseTimeZone'],
-					'currency' => 'MYR',
+					  'timezone'   => 'Asia/Kuala_Lumpur',
+					'currency' => charitable_get_option('currency'),
 					'due_strict' => $due_strict,
 					'products' => array( [ 
 						'name' => substr( $campaign_name, 0, 256 ),
@@ -384,7 +383,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			// Set due timing
 			if ( $due_strict ) {
 				if ( ! empty( charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) ) {
-					$purchase_params['due'] = time() + abs( (int) charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) * 60;
+					$purchase_params['due'] = time() + absint(charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) * 60;
 				}
 			}
 
@@ -573,7 +572,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 					$message .= "<br><br><a href=" . $gateway->getCancelURL( $donation ) . ">Go Back</a></div>";
 					die( __( $message, 'charitable' ) );
-					return;
 				}
 			} else {
 				$message = sprintf(
@@ -587,8 +585,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$donation->update_status( 'charitable-failed' );
 				return;
 			}
-
-			// return;
 		}
 
 		/**
