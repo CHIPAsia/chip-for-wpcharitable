@@ -134,7 +134,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'type' => 'multi-checkbox',
 				'title' => __( 'Payment Method Whitelist', 'chip-for-wpcharitable' ),
 				'priority' => 6,
-				'help' => 'Set payment method whitelist separated by comma. Acceptable value: fpx, fpx_b2b1, mastercard, maestro, visa, razer_atome, razer_grabpay, razer_maybankqr, razer_shopeepay, razer_tng, duitnow_qr. Leave blank if unsure.',
+        'help' => 'Tick to only allow specified payment method.',
 				'options' => array(
 					'fpx' => __( 'FPX', 'fpx' ),
 					'fpx_b2b1' => __( 'FPX B2B', 'fpx_b2b1' ),
@@ -277,9 +277,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		 */
 		private function createRequest( $donation, $gateway ) {
 
-			/*
-			 * Support for Advance CHIP for WP Charitable Plugin
-			 */
 			$campaign_donations = $donation->get_campaign_donations();
 
 			foreach ( $campaign_donations as $key => $value ) {
@@ -305,8 +302,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$keys = $gateway->get_keys();
 
-			$brand_id = apply_filters( 'chip_for_wp_charitable_brand_id', $keys['brand_id'], $post, $campaign );
-			$secret_key = apply_filters( 'chip_for_wp_charitable_secret_key', $keys['secret_key'], $post, $campaign );
+			$brand_id = apply_filters( 'charitable_gateway_chip_brand_id', $keys['brand_id'], $post, $campaign );
+			$secret_key = apply_filters( 'charitable_gateway_chip_secret_key', $keys['secret_key'], $post, $campaign );
 			$callback_url = Charitable_Gateway_Chip_Callback_Listener::get_listener_url( $donation );
 
 			// Response URL
@@ -353,16 +350,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					'full_name' => substr( preg_replace( '/[^A-Za-z0-9\@\/\\\(\)\.\-\_\,\&\']\ /', '', str_replace( '’', '\'', $first_name . ' ' . $last_name ) ), 0, 128 ),
 				),
 				'success_redirect' => $success_url, // the donation receipt url page
-				// 'failure_redirect' => '',
+				'failure_redirect' => $cancel_url,
 				'cancel_redirect' => $cancel_url, // donation cancel page
 				'success_callback' => $callback_url, // callback 
 				// 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
 				'creator_agent' => 'WP Charitable ' . Charitable_Chip::VERSION,
 				'reference' => $donation->ID,
-				// 'client_id'        => $client['id'],
 				'platform' => 'api', // 'charitable'
 				'send_receipt' => $purchase_send_receipt, // charitable_get_option('gateways_chip')['purchase_send_receipt'] == 1,
-				// 'due'              => time() + (abs( (int)$params['dueStrictTiming'] ) * 60),
 				'brand_id' => $brand_id,
 				'purchase' => array(
 					'timezone' => 'Asia/Kuala_Lumpur',
@@ -396,6 +391,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$purchase_params['phone'] = $phone;
 			}
 
+      $purchase_params = apply_filters( 'charitable_gateway_chip_create_purchase_params', $purchase_params, $donation, $gateway );
+
 			// Check first if brand ID and secret key configured
 			$credentials = array(
 				$secret_key,
@@ -403,7 +400,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			);
 			$chip = new Chip_Charitable_API( $credentials );
 
-			$response = $chip->create_payment( $purchase_params );
+			$response = apply_filters( 'charitable_gateway_chip_purchase_response', $chip->create_payment( $purchase_params ) );
 
 			// Check if have response from CHIP
 			if ( isset( $response['id'] ) ) {
@@ -621,13 +618,13 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 							url: ajaxurl,
 							success: function (response) {
-								console.log(response);
+								// console.log(response);
 								if (response.success) {
 									$this.parents('.notice').first().slideUp();
 								}
 							},
 							error: function (response) {
-								console.log(response);
+								// console.log(response);
 							}
 						});
 					})
@@ -686,14 +683,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 							},
 							url: ajaxurl,
 							success: function (response) {
-								console.log(response);
+								// console.log(response);
 
 								if (response.success) {
 									$this.parents('.notice').first().slideUp();
 								}
 							},
 							error: function (response) {
-								console.log(response);
+								// console.log(response);
 							}
 						});
 					})
