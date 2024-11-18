@@ -134,7 +134,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'type' => 'multi-checkbox',
 				'title' => __( 'Payment Method Whitelist', 'chip-for-wpcharitable' ),
 				'priority' => 6,
-				'help' => 'Set payment method whitelist separated by comma. Acceptable value: fpx, fpx_b2b1, mastercard, maestro, visa, razer_atome, razer_grabpay, razer_maybankqr, razer_shopeepay, razer_tng, duitnow_qr. Leave blank if unsure.',
+        'help' => 'Tick to only allow specified payment method.',
 				'options' => array(
 					'fpx' => __( 'FPX', 'fpx' ),
 					'fpx_b2b1' => __( 'FPX B2B', 'fpx_b2b1' ),
