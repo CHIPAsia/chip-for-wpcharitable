@@ -264,7 +264,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 	               </script>" );
 			} else if ( isset( $method_data['errors'] ) ) {
 				echo ( "<div class='charitable-notice charitable-form-errors'>Error:" );
-        		echo '<div class="error-message">' . print_r($method_data['errors'], true) . '</div>';
+				echo '<div class="error-message">' . print_r( $method_data['errors'], true ) . '</div>';
 				echo ( "<a href=" . $gateway->getCancelUrl( $donation ) . ">Go Back</a></div>" );
 			}
 
@@ -315,7 +315,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$cancel_url = charitable_get_permalink( 'donation_cancellation', array( 'donation_id' => $donation->ID ) );
 
 
-      $due_strict = false;
+			$due_strict = false;
 			// Set due
 			if ( isset( charitable_get_option( 'gateways_chip' )['due_strict'] ) ) {
 				if ( charitable_get_option( 'gateways_chip' )['due_strict'] == 1 ) {
@@ -350,7 +350,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$purchase_params = array(
 				'client' => array(
 					'email' => $email,
-					'full_name' => substr(preg_replace('/[^A-Za-z0-9\@\/\\\(\)\.\-\_\,\&\']\ /', '', str_replace('’', '\'', $first_name . ' ' . $last_name)), 0, 128),
+					'full_name' => substr( preg_replace( '/[^A-Za-z0-9\@\/\\\(\)\.\-\_\,\&\']\ /', '', str_replace( '’', '\'', $first_name . ' ' . $last_name ) ), 0, 128 ),
 				),
 				'success_redirect' => $success_url, // the donation receipt url page
 				// 'failure_redirect' => '',
@@ -365,8 +365,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				// 'due'              => time() + (abs( (int)$params['dueStrictTiming'] ) * 60),
 				'brand_id' => $brand_id,
 				'purchase' => array(
-					  'timezone'   => 'Asia/Kuala_Lumpur',
-					'currency' => charitable_get_option('currency'),
+					'timezone' => 'Asia/Kuala_Lumpur',
+					'currency' => charitable_get_option( 'currency' ),
 					'due_strict' => $due_strict,
 					'products' => array( [ 
 						'name' => substr( $campaign_name, 0, 256 ),
@@ -378,21 +378,21 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			// Set due timing
 			if ( $due_strict ) {
 				if ( ! empty( charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) ) {
-					$purchase_params['due'] = time() + absint(charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) * 60;
+					$purchase_params['due'] = time() + absint( charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) * 60;
 				}
 			}
 
 			// Set payment method whitelist
 			if ( isset( charitable_get_option( 'gateways_chip' )['payment_method_whitelist'] ) ) {
 				$payment_method_whitelist = charitable_get_option( 'gateways_chip' )['payment_method_whitelist'];
-	
+
 				if ( ! empty( $payment_method_whitelist ) ) {
 					$purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
 				}
 			}
 
 			// Add phone
-			if (isset($phone) && ! empty( $phone ) ) {
+			if ( isset( $phone ) && ! empty( $phone ) ) {
 				$purchase_params['phone'] = $phone;
 			}
 
@@ -501,6 +501,25 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					return;
 				}
 
+				// Lock the row
+				self::lock( $donation_id );
+
+				// Check if donation status is completed
+				if ( $donation->post_status == 'charitable-completed' ) {
+
+					// Redirect to donation receipt page
+					wp_safe_redirect(
+						charitable_get_permalink(
+							'donation_receipt_page',
+							array(
+								'donation_id' => $donation_id
+							)
+						)
+					);
+					exit;
+				}
+
+				// Check if donation response is paid
 				if ( $response['status'] == 'paid' ) {
 					// Verify for donation_key
 					if ( $donation_key != $donation->get_donation_key() ) {
@@ -541,14 +560,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					);
 					self::update_donation_log( $donation, $message );
 
-					// Lock the row
-					if (self::get_lock( $donation_id )) {
-						// Update donation status to complete
-						$donation->update_status( 'charitable-completed' );
-					
-						// Release the lock
-						self::release_lock( $donation_id );
-					}
+					// Update donation status to complete
+					$donation->update_status( 'charitable-completed' );
 
 					return;
 				} else {
@@ -727,22 +740,10 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		}
 
 		/**
-		 * Get lock row
+		 *  Lock row
 		 */
-		public static function get_lock( $donation_id ) {
-			$status = $GLOBALS['wpdb']->get_var( "SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);" );
-
-			return $status === '1';
-		}
-
-
-		/** 
-		 * Release lock row
-		 */
-		public static function release_lock( $donation_id ) {
-			$status = $GLOBALS['wpdb']->get_var( "SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');" );
-
-			return $status === '1';
+		public static function lock( $donation_id ) {
+			$GLOBALS['wpdb']->get_results( "SELECT GET_LOCK('charitable_chip_payment_$donation_id', 5);" );
 		}
 	}
 } // End class_exists check

@@ -6,7 +6,7 @@
  * 
  */
 if ( ! defined( 'ABSPATH' ) ) {
-	exit('No direct script access allowed');
+	exit( 'No direct script access allowed' );
 }
 
 class Chip_Charitable_API {

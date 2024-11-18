@@ -63,6 +63,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 				}
 			}
 
+			// json_decode $purchase (string)
+			$purchase = json_decode( $content, true );
+
 			// Check X-Signature is set
 			if ( ! isset( $_SERVER['HTTP_X_SIGNATURE'] ) ) {
 				exit;
@@ -72,12 +75,12 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 			$settings = get_option( 'charitable_settings' );
 			$public_key = $settings['gateways_chip']['public_key'];
 
-			$verification_result = openssl_verify(
-				$content,
-				base64_decode( $_SERVER['HTTP_X_SIGNATURE'] ),
-				$public_key,
-				'sha256WithRSAEncryption'
-			);
+			// $verification_result = openssl_verify(
+			// 	$content,
+			// 	base64_decode( $_SERVER['HTTP_X_SIGNATURE'] ),
+			// 	$public_key,
+			// 	'sha256WithRSAEncryption'
+			// );
 
 			// Verify X-Signature
 			if ( openssl_verify( $content, base64_decode( $_SERVER['HTTP_X_SIGNATURE'] ), $public_key, 'sha256WithRSAEncryption' ) != 1 ) {
@@ -86,26 +89,29 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 			}
 
 			// Lock row
-			if ($this->get_lock( $donation_id )) {
-				$this->update_order_status( $donation_id, $content );
-			}
-		}
+			$this->lock( $donation_id );
 
-		private function update_order_status( $donation_id, $content ) {
 			$donation = new Charitable_Donation( $donation_id );
 
-			// Check status of donation
+			// Check status of donation completed
 			if ( $donation->post_status == 'charitable-completed' ) {
 				return;
 			}
 
-			// json_decode $content (string)
-			$content = json_decode( $content, true );
+			// If purchase status is paid
+			if ( $purchase['status'] == 'paid' ) {
+				// Update order status
+				$this->update_order_status( $donation_id, $purchase );
+			}
+		}
+
+		private function update_order_status( $donation_id, $purchase ) {
+			$donation = new Charitable_Donation( $donation_id );
 
 			// $gateway = new Charitable_Gateway_Chip();
 			// $keys = $gateway->get_keys();
-			$payment_method = $content['transaction_data']['payment_method'];
-			$transaction_id = $content['id'];
+			$payment_method = $purchase['transaction_data']['payment_method'];
+			$transaction_id = $purchase['id'];
 
 			// Update donation log
 			$message = sprintf(
@@ -118,29 +124,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 			// Update donation status to complete
 			$donation->update_status( 'charitable-completed' );
 
-			// Release lock
-			$this->release_lock( $donation_id );
-
 			return;
 		}
 
 		/**
-		 * Get lock row
+		 *  Lock row
 		 */
-		public function get_lock( $donation_id ) {
-			$status = $GLOBALS['wpdb']->get_var( "SELECT GET_LOCK('charitable_chip_payment_$donation_id', 15);" );
-
-			return $status === '1';
-		}
-
-
-		/** 
-		 * Release lock row
-		 */
-		public function release_lock( $donation_id ) {
-			$status = $GLOBALS['wpdb']->get_var( "SELECT RELEASE_LOCK('charitable_chip_payment_$donation_id');" );
-			
-			return $status === '1';
+		public function lock( $donation_id ) {
+			$GLOBALS['wpdb']->get_results( "SELECT GET_LOCK('charitable_chip_payment_$donation_id', 5);" );
 		}
 
 		/**

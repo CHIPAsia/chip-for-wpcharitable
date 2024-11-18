@@ -39,7 +39,7 @@ add_filter( 'charitable_donation_form_user_fields', array( 'Charitable_Gateway_C
 /**
  * Handle public key
  */
-add_action( 'update_option_charitable_settings', array( 'Charitable_Chip', 'store_public_key' ), 10, 3);
+add_action( 'update_option_charitable_settings', array( 'Charitable_Chip', 'store_public_key' ), 10, 3 );
 
 /**
  * Render the CHIP donation processing page content.

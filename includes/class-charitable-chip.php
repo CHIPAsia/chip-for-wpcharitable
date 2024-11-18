@@ -141,7 +141,7 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		/**
 		 * Store CHIP public keys
 		 */
-		public static function store_public_key($old_value, $value, $option) {
+		public static function store_public_key( $old_value, $value, $option ) {
 			if ( $value ) {
 
 				// $settings = get_option('charitable_settings');
