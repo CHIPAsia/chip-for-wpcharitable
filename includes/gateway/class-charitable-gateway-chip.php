@@ -311,18 +311,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$success_url = add_query_arg( 'donation_key', $donation_key, $success_url );
 			$cancel_url = charitable_get_permalink( 'donation_cancellation', array( 'donation_id' => $donation->ID ) );
 
-
-			$due_strict = false;
-			// Set due
-			if ( isset( charitable_get_option( 'gateways_chip' )['due_strict'] ) ) {
-				if ( charitable_get_option( 'gateways_chip' )['due_strict'] == 1 ) {
-					$due_strict = true;
-				}
-			}
+      $chip_option = charitable_get_option( 'gateways_chip' );
 
 			// Set purchase send receipt 
-			if ( isset( charitable_get_option( 'gateways_chip' )['purchase_send_receipt'] ) ) {
-				$purchase_send_receipt = (bool) ( charitable_get_option( 'gateways_chip' )['purchase_send_receipt'] );
+			if ( isset( $chip_option['purchase_send_receipt'] ) ) {
+				$purchase_send_receipt = (bool) ( $chip_option['purchase_send_receipt'] );
 			} else {
 				$purchase_send_receipt = false;
 			}
@@ -362,7 +355,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'purchase' => array(
 					'timezone' => 'Asia/Kuala_Lumpur',
 					'currency' => charitable_get_option( 'currency' ),
-					'due_strict' => $due_strict,
 					'products' => array( [ 
 						'name' => substr( $campaign_name, 0, 256 ),
 						'price' => round( $amount * 100 ),
@@ -370,17 +362,17 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				),
 			);
 
-			// Set due timing
-			if ( $due_strict ) {
-				if ( ! empty( charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) ) {
-					$purchase_params['due'] = time() + absint( charitable_get_option( 'gateways_chip' )['due_strict_timing'] ) * 60;
-				}
+			if ( isset( $chip_option['due_strict'] ) AND $chip_option['due_strict'] == 1 ) {
+					$purchase_params['purchase']['due_strict'] = true;
+          if ( ! empty( $chip_option['due_strict_timing'] ) ) {
+            $purchase_params['due'] = time() + absint($chip_option['due_strict_timing'] ) * 60;
+          }
 			}
 
 			// Set payment method whitelist
-			if ( isset( charitable_get_option( 'gateways_chip' )['payment_method_whitelist'] ) ) {
-				$payment_method_whitelist = charitable_get_option( 'gateways_chip' )['payment_method_whitelist'];
-
+			if ( isset( $chip_option['payment_method_whitelist'] ) ) {
+				$payment_method_whitelist = $chip_option['payment_method_whitelist'];
+	
 				if ( ! empty( $payment_method_whitelist ) ) {
 					$purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
 				}
