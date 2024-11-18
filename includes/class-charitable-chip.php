@@ -141,17 +141,16 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 		/**
 		 * Store CHIP public keys
 		 */
-		public static function store_public_key() {
-
-			if ( $settings = get_option( 'charitable_settings' ) ) {
+		public static function store_public_key($old_value, $value, $option) {
+			if ( $value ) {
 
 				// $settings = get_option('charitable_settings');
 
-				if ( isset( $settings['gateways_chip']['brand_id'] ) && isset( $settings['gateways_chip']['secret_key'] ) ) {
+				if ( isset( $value['gateways_chip']['brand_id'] ) && isset( $value['gateways_chip']['secret_key'] ) ) {
 
 					// Check if secret_key and brand_id set
-					$brand_id = $settings['gateways_chip']['brand_id'];
-					$secret_key = $settings['gateways_chip']['secret_key'];
+					$brand_id = $value['gateways_chip']['brand_id'];
+					$secret_key = $value['gateways_chip']['secret_key'];
 
 					$credentials = array(
 						$secret_key,
@@ -160,9 +159,9 @@ if ( ! class_exists( 'Charitable_Chip' ) ) :
 
 					$chip = new Chip_Charitable_API( $credentials );
 
-					$settings['gateways_chip']['public_key'] = $chip->public_key();
+					$value['gateways_chip']['public_key'] = $chip->public_key();
 
-					update_option( 'charitable_settings', $settings );
+					update_option( 'charitable_settings', $value );
 				}
 			}
 		}
