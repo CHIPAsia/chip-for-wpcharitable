@@ -605,13 +605,13 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 							url: ajaxurl,
 							success: function (response) {
-								console.log(response);
+								// console.log(response);
 								if (response.success) {
 									$this.parents('.notice').first().slideUp();
 								}
 							},
 							error: function (response) {
-								console.log(response);
+								// console.log(response);
 							}
 						});
 					})
@@ -670,14 +670,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 							},
 							url: ajaxurl,
 							success: function (response) {
-								console.log(response);
+								// console.log(response);
 
 								if (response.success) {
 									$this.parents('.notice').first().slideUp();
 								}
 							},
 							error: function (response) {
-								console.log(response);
+								// console.log(response);
 							}
 						});
 					})
