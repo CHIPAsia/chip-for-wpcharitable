@@ -350,16 +350,14 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					'full_name' => substr(preg_replace('/[^A-Za-z0-9\@\/\\\(\)\.\-\_\,\&\']\ /', '', str_replace('’', '\'', $first_name . ' ' . $last_name)), 0, 128),
 				),
 				'success_redirect' => $success_url, // the donation receipt url page
-				// 'failure_redirect' => '',
+				'failure_redirect' => $cancel_url,
 				'cancel_redirect' => $cancel_url, // donation cancel page
 				'success_callback' => $callback_url, // callback 
 				// 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
 				'creator_agent' => 'WP Charitable ' . Charitable_Chip::VERSION,
 				'reference' => $donation->ID,
-				// 'client_id'        => $client['id'],
 				'platform' => 'api', // 'charitable'
 				'send_receipt' => $purchase_send_receipt, // charitable_get_option('gateways_chip')['purchase_send_receipt'] == 1,
-				// 'due'              => time() + (abs( (int)$params['dueStrictTiming'] ) * 60),
 				'brand_id' => $brand_id,
 				'purchase' => array(
 					  'timezone'   => 'Asia/Kuala_Lumpur',
