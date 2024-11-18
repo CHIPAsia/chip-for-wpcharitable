@@ -302,8 +302,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			$keys = $gateway->get_keys();
 
-			$brand_id = apply_filters( 'chip_for_wp_charitable_brand_id', $keys['brand_id'], $post, $campaign );
-			$secret_key = apply_filters( 'chip_for_wp_charitable_secret_key', $keys['secret_key'], $post, $campaign );
+			$brand_id = apply_filters( 'charitable_gateway_chip_brand_id', $keys['brand_id'], $post, $campaign );
+			$secret_key = apply_filters( 'charitable_gateway_chip_secret_key', $keys['secret_key'], $post, $campaign );
 			$callback_url = Charitable_Gateway_Chip_Callback_Listener::get_listener_url( $donation );
 
 			// Response URL
@@ -391,6 +391,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$purchase_params['phone'] = $phone;
 			}
 
+      $purchase_params = apply_filters( 'charitable_gateway_chip_create_purchase_params', $purchase_params, $donation, $gateway );
+
 			// Check first if brand ID and secret key configured
 			$credentials = array(
 				$secret_key,
@@ -398,7 +400,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			);
 			$chip = new Chip_Charitable_API( $credentials );
 
-			$response = $chip->create_payment( $purchase_params );
+			$response = apply_filters( 'charitable_gateway_chip_purchase_response', $chip->create_payment( $purchase_params ) );
 
 			// Check if have response from CHIP
 			if ( isset( $response['id'] ) ) {
