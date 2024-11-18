@@ -635,7 +635,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		/**
 		 * Change the default gateway to CHIP
 		 */
-		public function change_gateway_to_chip() {
+		public static function change_gateway_to_chip() {
 			if ( ! wp_verify_nonce( $_REQUEST['_nonce'], 'chip_gateway_change' ) ) {
 				wp_send_json_error();
 			}
