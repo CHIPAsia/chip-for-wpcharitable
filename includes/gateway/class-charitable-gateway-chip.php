@@ -277,9 +277,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 		 */
 		private function createRequest( $donation, $gateway ) {
 
-			/*
-			 * Support for Advance CHIP for WP Charitable Plugin
-			 */
 			$campaign_donations = $donation->get_campaign_donations();
 
 			foreach ( $campaign_donations as $key => $value ) {
