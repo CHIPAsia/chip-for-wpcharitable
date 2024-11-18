@@ -400,6 +400,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 				// Set Charitable CHIP Gateway transaction ID
 				$donation->set_gateway_transaction_id( $response['id'] );
+
+				// Set test mode status
+				update_post_meta( $donation->ID, 'test_mode', $response['is_test'] );
+
+				// Update donation log 
 				self::update_donation_log( $donation, "Checkout Link: " . print_r( $response['checkout_url'], true ) );
 			} else {
 				$method_data['errors'] = $response;
