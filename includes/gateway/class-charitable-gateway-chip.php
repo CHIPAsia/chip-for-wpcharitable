@@ -134,7 +134,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'type' => 'multi-checkbox',
 				'title' => __( 'Payment Method Whitelist', 'chip-for-wpcharitable' ),
 				'priority' => 6,
-        'help' => 'Tick to only allow specified payment method.',
+				'help' => 'Tick to only allow specified payment method.',
 				'options' => array(
 					'fpx' => __( 'FPX', 'fpx' ),
 					'fpx_b2b1' => __( 'FPX B2B', 'fpx_b2b1' ),
@@ -283,7 +283,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				if ( ! empty( $value->campaign_id ) ) {
 					$post_id = $value->campaign_id;
 					$campaign_name = $value->campaign_name;
-					$post = get_post( (int) $post_id );
+					$post = get_post( (int)$post_id );
 					$campaign = new Charitable_Campaign( $post );
 					break;
 				}
@@ -311,11 +311,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$success_url = add_query_arg( 'donation_key', $donation_key, $success_url );
 			$cancel_url = charitable_get_permalink( 'donation_cancellation', array( 'donation_id' => $donation->ID ) );
 
-      $chip_option = charitable_get_option( 'gateways_chip' );
+			$chip_option = charitable_get_option( 'gateways_chip' );
 
 			// Set purchase send receipt 
 			if ( isset( $chip_option['purchase_send_receipt'] ) ) {
-				$purchase_send_receipt = (bool) ( $chip_option['purchase_send_receipt'] );
+				$purchase_send_receipt = (bool)( $chip_option['purchase_send_receipt'] );
 			} else {
 				$purchase_send_receipt = false;
 			}
@@ -362,17 +362,17 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				),
 			);
 
-			if ( isset( $chip_option['due_strict'] ) AND $chip_option['due_strict'] == 1 ) {
-					$purchase_params['purchase']['due_strict'] = true;
-          if ( ! empty( $chip_option['due_strict_timing'] ) ) {
-            $purchase_params['due'] = time() + absint($chip_option['due_strict_timing'] ) * 60;
-          }
+			if ( isset( $chip_option['due_strict'] ) and $chip_option['due_strict'] == 1 ) {
+				$purchase_params['purchase']['due_strict'] = true;
+				if ( ! empty( $chip_option['due_strict_timing'] ) ) {
+					$purchase_params['due'] = time() + absint( $chip_option['due_strict_timing'] ) * 60;
+				}
 			}
 
 			// Set payment method whitelist
 			if ( isset( $chip_option['payment_method_whitelist'] ) ) {
 				$payment_method_whitelist = $chip_option['payment_method_whitelist'];
-	
+
 				if ( ! empty( $payment_method_whitelist ) ) {
 					$purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
 				}
@@ -383,7 +383,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				$purchase_params['phone'] = $phone;
 			}
 
-      $purchase_params = apply_filters( 'charitable_gateway_chip_create_purchase_params', $purchase_params, $donation, $gateway );
+			$purchase_params = apply_filters( 'charitable_gateway_chip_create_purchase_params', $purchase_params, $donation, $gateway );
 
 			// Check first if brand ID and secret key configured
 			$credentials = array(
