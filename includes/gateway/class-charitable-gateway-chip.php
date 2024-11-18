@@ -135,8 +135,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'title' => __( 'Payment Method Whitelist', 'chip-for-wpcharitable' ),
 				'priority' => 6,
 				'help' => 'Set payment method whitelist separated by comma. Acceptable value: fpx, fpx_b2b1, mastercard, maestro, visa, razer_atome, razer_grabpay, razer_maybankqr, razer_shopeepay, razer_tng, duitnow_qr. Leave blank if unsure.',
-				'default' => [ 'fpx' ],
-				// 'default' => $available_payment_methods,
 				'options' => array(
 					'fpx' => __( 'FPX', 'fpx' ),
 					'fpx_b2b1' => __( 'FPX B2B', 'fpx_b2b1' ),
@@ -317,13 +315,12 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$cancel_url = charitable_get_permalink( 'donation_cancellation', array( 'donation_id' => $donation->ID ) );
 
 
+      $due_strict = false;
 			// Set due
 			if ( isset( charitable_get_option( 'gateways_chip' )['due_strict'] ) ) {
 				if ( charitable_get_option( 'gateways_chip' )['due_strict'] == 1 ) {
 					$due_strict = true;
 				}
-			} else {
-				$due_strict = false;
 			}
 
 			// Set purchase send receipt 
@@ -388,9 +385,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			// Set payment method whitelist
 			if ( isset( charitable_get_option( 'gateways_chip' )['payment_method_whitelist'] ) ) {
 				$payment_method_whitelist = charitable_get_option( 'gateways_chip' )['payment_method_whitelist'];
-
-				$diff = array_diff( $payment_method_whitelist, [ 'fpx', 'fpx_b2b1', 'mastercard', 'maestro', 'visa', 'razer_atome', 'razer_grabpay', 'razer_maybankqr', 'razer_shopeepay', 'razer_tng', 'duitnow_qr' ] );
-				if ( empty( $diff ) ) {
+	
+				if ( ! empty( $payment_method_whitelist ) ) {
 					$purchase_params['payment_method_whitelist'] = $payment_method_whitelist;
 				}
 			}
