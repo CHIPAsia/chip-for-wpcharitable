@@ -75,13 +75,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 			$settings = get_option( 'charitable_settings' );
 			$public_key = $settings['gateways_chip']['public_key'];
 
-			// $verification_result = openssl_verify(
-			// 	$content,
-			// 	base64_decode( $_SERVER['HTTP_X_SIGNATURE'] ),
-			// 	$public_key,
-			// 	'sha256WithRSAEncryption'
-			// );
-
 			// Verify X-Signature
 			if ( openssl_verify( $content, base64_decode( $_SERVER['HTTP_X_SIGNATURE'] ), $public_key, 'sha256WithRSAEncryption' ) != 1 ) {
 				header( 'Forbidden', true, 403 );
