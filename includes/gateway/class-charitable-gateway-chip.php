@@ -508,8 +508,13 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					return;
 				}
 
+				// Remove cache of donation
+				wp_cache_delete( $donation_id, 'charitable_donation' );
+
 				// Lock the row
 				self::lock( $donation_id );
+				
+				$donation = new Charitable_Donation( $donation->ID);
 
 				// Check if donation status is completed
 				if ( $donation->post_status == 'charitable-completed' ) {
