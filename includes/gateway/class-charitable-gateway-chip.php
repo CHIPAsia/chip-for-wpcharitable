@@ -229,7 +229,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			// If method_data['action] set
 			if ( isset( $method_data['action'] ) ) {
-				echo $content;
+				// echo $content;
 				echo ( "<form method='get'
 	               action='" . $method_data['action'] . "'	id='chip-form'></form>
                    <script type='text/javascript'>        
