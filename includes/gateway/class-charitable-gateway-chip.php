@@ -283,7 +283,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				if ( ! empty( $value->campaign_id ) ) {
 					$post_id = $value->campaign_id;
 					$campaign_name = $value->campaign_name;
-					$post = get_post( (int)$post_id );
+					$post = get_post( (int) $post_id );
 					$campaign = new Charitable_Campaign( $post );
 					break;
 				}
@@ -297,6 +297,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 			$email = $donor->get_donor_meta( 'email' );
 			$phone = $donor->get_donor_meta( 'phone' ) ?? '';
 			$amount = $donation->get_total_donation_amount( true );
+			$address = rtrim( $donor->get_donor_meta( 'address' ), "," ) . ',' . rtrim( $donor->get_donor_meta( 'address_2' ), "," );
+			$city = $donor->get_donor_meta( 'city' );
+			$state = $donor->get_donor_meta( 'state' );
+			$postcode = $donor->get_donor_meta( 'postcode' );
+			$country = $donor->get_donor_meta( 'country' );
 
 			$donation_key = $donation->get_donation_key();
 
@@ -315,7 +320,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			// Set purchase send receipt 
 			if ( isset( $chip_option['purchase_send_receipt'] ) ) {
-				$purchase_send_receipt = (bool)( $chip_option['purchase_send_receipt'] );
+				$purchase_send_receipt = (bool) ( $chip_option['purchase_send_receipt'] );
 			} else {
 				$purchase_send_receipt = false;
 			}
@@ -341,6 +346,12 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'client' => array(
 					'email' => $email,
 					'full_name' => substr( preg_replace( '/[^A-Za-z0-9\@\/\\\(\)\.\-\_\,\&\']\ /', '', str_replace( '’', '\'', $first_name . ' ' . $last_name ) ), 0, 128 ),
+					'phone' => $phone,
+					'street_address' => rtrim( $address, "," ),
+					'country' => $country,
+					'city' => $city,
+					'zip_code' => $postcode,
+					'state' => $state,
 				),
 				'success_redirect' => $success_url, // the donation receipt url page
 				'failure_redirect' => $cancel_url,
@@ -378,9 +389,11 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				}
 			}
 
-			// Add phone
-			if ( isset( $phone ) && ! empty( $phone ) ) {
-				$purchase_params['phone'] = $phone;
+			// Unset empty params for client
+			foreach ( $purchase_params['client'] as $key => $value ) {
+				if ( empty( $value ) ) {
+					unset( $purchase_params['client'][ $key ] );
+				}
 			}
 
 			$purchase_params = apply_filters( 'charitable_gateway_chip_create_purchase_params', $purchase_params, $donation, $gateway );
