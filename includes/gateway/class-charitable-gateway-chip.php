@@ -283,7 +283,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				if ( ! empty( $value->campaign_id ) ) {
 					$post_id = $value->campaign_id;
 					$campaign_name = $value->campaign_name;
-					$post = get_post( (int) $post_id );
+					$post = get_post( (int)$post_id );
 					$campaign = new Charitable_Campaign( $post );
 					break;
 				}
@@ -320,7 +320,7 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 			// Set purchase send receipt 
 			if ( isset( $chip_option['purchase_send_receipt'] ) ) {
-				$purchase_send_receipt = (bool) ( $chip_option['purchase_send_receipt'] );
+				$purchase_send_receipt = (bool)( $chip_option['purchase_send_receipt'] );
 			} else {
 				$purchase_send_receipt = false;
 			}
@@ -513,8 +513,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 
 				// Remove cache of donation
 				wp_cache_delete( $donation_id, 'charitable_donation' );
-				
-				$donation = new Charitable_Donation( $donation->ID);
+
+				$donation = new Charitable_Donation( $donation->ID );
 
 				// Check if donation status is completed
 				if ( $donation->post_status == 'charitable-completed' ) {

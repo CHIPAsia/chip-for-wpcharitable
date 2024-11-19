@@ -84,6 +84,9 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 			// Lock row
 			$this->lock( $donation_id );
 
+			// Remove cache of donation
+			wp_cache_delete( $donation_id, 'charitable_donation' );
+
 			$donation = new Charitable_Donation( $donation_id );
 
 			// Check status of donation completed
