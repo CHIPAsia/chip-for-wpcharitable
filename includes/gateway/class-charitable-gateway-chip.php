@@ -111,25 +111,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'help' => 'Public Key will be generated once Brand ID and Secret Key are set',
 			);
 
-			// Get the available payment methods
-			// if (isset(charitable_get_option('gateways_chip')['secret_key']) && isset(charitable_get_option('gateways_chip')['brand_id'])) {
-			//     $chip = new Chip_Charitable_API([
-			//         charitable_get_option('gateways_chip')['secret_key'],
-			//         charitable_get_option('gateways_chip')['brand_id']
-			//     ]);
-
-			//     $response = $chip->payment_methods('MYR');
-
-			//     // Checking response
-			//     if (array_key_exists("available_payment_methods",$response)) {
-			//         $available_payment_methods = $response['available_payment_methods'];
-			//     } else {
-			//         $available_payment_methods = [];
-			//     }
-			// } else {
-			//     $available_payment_methods = [];
-			// }
-
 			$settings['payment_method_whitelist'] = array(
 				'type' => 'multi-checkbox',
 				'title' => __( 'Payment Method Whitelist', 'chip-for-wpcharitable' ),
@@ -148,7 +129,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					'razer_tng' => __( 'Razer TnG', 'razer_tng' ),
 					'duitnow_qr' => __( 'DuitNow QR', 'duitnow_qr' ),
 				),
-				// 'required'  => true,
 			);
 
 			$settings['due_strict'] = array(
@@ -161,7 +141,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					'1' => __( 'Yes', 'charitable' ),
 					'0' => __( 'No', 'charitable' ),
 				),
-				// 'required'  => true,
 			);
 
 			$settings['due_strict_timing'] = array(
@@ -182,7 +161,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 					'1' => __( 'Yes', 'charitable' ),
 					'0' => __( 'No', 'charitable' ),
 				),
-				// 'required'  => true,
 			);
 
 			// $settings['email_fallback'] = array(
@@ -357,7 +335,6 @@ if ( ! class_exists( 'Charitable_Gateway_Chip' ) ) {
 				'failure_redirect' => $cancel_url,
 				'cancel_redirect' => $cancel_url, // donation cancel page
 				'success_callback' => $callback_url, // callback 
-				// 'success_callback' => 'https://webhook.site/4fb2208a-e322-457b-8335-e074832760de', // testing purpose
 				'creator_agent' => 'WP Charitable ' . Charitable_Chip::VERSION,
 				'reference' => $donation->ID,
 				'platform' => 'api', // 'charitable'
