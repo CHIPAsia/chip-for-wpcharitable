@@ -111,7 +111,8 @@ if ( ! class_exists( 'Charitable_Gateway_Chip_Callback_Listener' ) ) {
 
 			// Update donation log
 			$message = sprintf(
-				__( 'CHIP Transaction ID: %s and Payment Method: %s', 'chip-for-wpcharitable' ),
+        // translators: 1: CHIP Purchase ID, 2: Payment method name. E.g.: FPX, MPGS 
+				__( 'CHIP Transaction ID: %1$s and Payment Method: %2$s', 'chip-for-wpcharitable' ),
 				$transaction_id,
 				$payment_method
 			);
